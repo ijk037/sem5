@@ -1,0 +1,11 @@
+*.csv
+*.joblib
+archive/
+models/
+*.ipynb
+*.pdf
+eda_plots/
+model_plots/
+time_series_plots/
+stitch_food_delivery_demand_analytics_dashboard/server.py
+stitch_food_delivery_demand_analytics_dashboard/__pycache__/

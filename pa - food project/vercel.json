@@ -1,0 +1,10 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/", "destination": "/stitch_food_delivery_demand_analytics_dashboard/the_kitchen_forecaster/code.html" },
+    { "source": "/forecaster", "destination": "/stitch_food_delivery_demand_analytics_dashboard/the_kitchen_forecaster/code.html" },
+    { "source": "/trends", "destination": "/stitch_food_delivery_demand_analytics_dashboard/weekly_trends/code.html" },
+    { "source": "/scorecard", "destination": "/stitch_food_delivery_demand_analytics_dashboard/model_scorecard/code.html" },
+    { "source": "/notes", "destination": "/stitch_food_delivery_demand_analytics_dashboard/project_notes/code.html" }
+  ]
+}
