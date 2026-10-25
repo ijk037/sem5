@@ -1,24 +1,18 @@
 <!DOCTYPE html>
 
-<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><title>Demand Forecaster</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"outline":"#737972","on-tertiary-fixed":"#0b1f13","on-tertiary":"#ffffff","primary-fixed-dim":"#b3cdb7","inverse-primary":"#b3cdb7","primary-container":"#627a67","on-primary-fixed":"#092012","surface-container-highest":"#dbe5db","on-primary-container":"#f6fff4","surface-container-low":"#ecf6ec","surface-dim":"#d3ddd2","tertiary-container":"#647a69","inverse-surface":"#2a332c","surface-container-lowest":"#ffffff","error-container":"#ffdad6","on-primary-fixed-variant":"#354c3b","background":"#f2fcf1","surface-container-high":"#e1ebe0","inverse-on-surface":"#eaf3e9","surface-container":"#e7f1e6","tertiary-fixed-dim":"#b5ccb9","on-tertiary-container":"#f6fff5","secondary-fixed":"#ffdbcd","on-secondary-container":"#793f24","secondary-fixed-dim":"#ffb597","surface":"#f2fcf1","on-secondary-fixed-variant":"#6f371d","secondary":"#8c4e32","surface-bright":"#f2fcf1","outline-variant":"#c3c8c1","tertiary":"#4b6151","tertiary-fixed":"#d0e9d4","error":"#ba1a1a","on-background":"#151e17","secondary-container":"#ffae8b","on-error":"#ffffff","on-surface":"#151e17","primary-fixed":"#cee9d2","on-error-container":"#93000a","on-primary":"#ffffff","on-surface-variant":"#424843","on-tertiary-fixed-variant":"#374c3d","surface-tint":"#4c6452","on-secondary-fixed":"#360f00","surface-variant":"#dbe5db","primary":"#4a614f","on-secondary":"#ffffff"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"gutter-mobile":"1rem","space-md":"1rem","margin":"3rem","margin-mobile":"1.25rem","gutter":"1.5rem","space-lg":"1.75rem","space-xl":"2.75rem","space-xs":"0.25rem","space-sm":"0.5rem"},fontFamily:{"title-lg":["Plus Jakarta Sans"],"headline-md":["Playfair Display"],"display-lg":["Playfair Display"],"script-flourish":["Playfair Display"],"body-md":["Plus Jakarta Sans"],"headline-lg-mobile":["Playfair Display"],"headline-editorial":["Playfair Display"],"headline-lg":["Playfair Display"],"title-md":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"display-lg-mobile":["Playfair Display"]},fontSize:{"title-lg":["18px",{"lineHeight":"26px","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-md":["24px",{"lineHeight":"32px","letterSpacing":"-0.01em","fontWeight":"400"}],"display-lg":["48px",{"lineHeight":"56px","letterSpacing":"-0.02em","fontWeight":"400"}],"script-flourish":["15px",{"lineHeight":"20px","letterSpacing":"0.01em","fontWeight":"400"}],"body-md":["14px",{"lineHeight":"22px","fontWeight":"400"}],"headline-lg-mobile":["26px",{"lineHeight":"32px","fontWeight":"500"}],"headline-editorial":["20px",{"lineHeight":"28px","fontWeight":"400"}],"headline-lg":["36px",{"lineHeight":"44px","letterSpacing":"-0.015em","fontWeight":"500"}],"title-md":["16px",{"lineHeight":"24px","fontWeight":"600"}],"body-lg":["16px",{"lineHeight":"26px","fontWeight":"400"}],"label-lg":["14px",{"lineHeight":"20px","letterSpacing":"0.01em","fontWeight":"500"}],"body-sm":["12px",{"lineHeight":"18px","fontWeight":"400"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.03em","fontWeight":"600"}],"display-lg-mobile":["32px",{"lineHeight":"40px","letterSpacing":"-0.01em","fontWeight":"400"}]}}}}</script></head><body class="bg-[#FBFBF8] text-on-surface font-body-md text-body-md antialiased selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 left-0 right-0 z-50 bg-[#FBFBF8]/90 backdrop-blur-md border-b border-[#E3E6DC]"><div class="h-20 max-w-[1360px] mx-auto px-6 lg:px-12 flex items-center justify-between gap-6"><div class="flex items-center gap-3 shrink-0"><div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-primary"><span class="material-symbols-outlined text-[20px]">potted_plant</span></div><div class="flex flex-col"><span class="font-headline-editorial text-headline-editorial text-[#2C352E] tracking-tight">Demand Forecaster</span><span class="font-script-flourish text-script-flourish italic text-tertiary -mt-1">Predictive Analysis • Food Demand Forecaster</span></div></div><nav class="hidden md:flex items-center gap-3" data-active-classes="text-primary font-semibold border-b border-primary pb-0.5"><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="forecaster" href="/forecaster">Forecaster</a><span class="text-[#E3E6DC] select-none">•</span><a aria-current="page" class="transition-colors text-primary font-semibold border-b border-primary pb-0.5" data-path="weekly-trends" href="/trends">Weekly Trends</a><span class="text-[#E3E6DC] select-none">•</span><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="model-scorecard" href="/scorecard">Model Scorecard</a><span class="text-[#E3E6DC] select-none">•</span><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="project-notes" href="/notes">Project Notes</a></nav><div class="flex items-center gap-4 shrink-0"><div class="hidden sm:inline-flex items-center px-3.5 py-1 rounded-full bg-surface-container-low border border-[#E3E6DC] text-tertiary font-script-flourish text-script-flourish italic"><span class="material-symbols-outlined text-[14px] mr-1.5 text-secondary">auto_awesome</span>predictive analytics • CSE 2026</div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-[#FBFBF8] min-h-screen"><div class="flex flex-col w-full">
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><title>Weekly Trends | FoodPulse AI</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"outline":"#737972","on-tertiary-fixed":"#0b1f13","on-tertiary":"#ffffff","primary-fixed-dim":"#b3cdb7","inverse-primary":"#b3cdb7","primary-container":"#627a67","on-primary-fixed":"#092012","surface-container-highest":"#dbe5db","on-primary-container":"#f6fff4","surface-container-low":"#ecf6ec","surface-dim":"#d3ddd2","tertiary-container":"#647a69","inverse-surface":"#2a332c","surface-container-lowest":"#ffffff","error-container":"#ffdad6","on-primary-fixed-variant":"#354c3b","background":"#f2fcf1","surface-container-high":"#e1ebe0","inverse-on-surface":"#eaf3e9","surface-container":"#e7f1e6","tertiary-fixed-dim":"#b5ccb9","on-tertiary-container":"#f6fff5","secondary-fixed":"#ffdbcd","on-secondary-container":"#793f24","secondary-fixed-dim":"#ffb597","surface":"#f2fcf1","on-secondary-fixed-variant":"#6f371d","secondary":"#8c4e32","surface-bright":"#f2fcf1","outline-variant":"#c3c8c1","tertiary":"#4b6151","tertiary-fixed":"#d0e9d4","error":"#ba1a1a","on-background":"#151e17","secondary-container":"#ffae8b","on-error":"#ffffff","on-surface":"#151e17","primary-fixed":"#cee9d2","on-error-container":"#93000a","on-primary":"#ffffff","on-surface-variant":"#424843","on-tertiary-fixed-variant":"#374c3d","surface-tint":"#4c6452","on-secondary-fixed":"#360f00","surface-variant":"#dbe5db","primary":"#4a614f","on-secondary":"#ffffff"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"gutter-mobile":"1rem","space-md":"1rem","margin":"3rem","margin-mobile":"1.25rem","gutter":"1.5rem","space-lg":"1.75rem","space-xl":"2.75rem","space-xs":"0.25rem","space-sm":"0.5rem"},fontFamily:{"title-lg":["Plus Jakarta Sans"],"headline-md":["Playfair Display"],"display-lg":["Playfair Display"],"script-flourish":["Playfair Display"],"body-md":["Plus Jakarta Sans"],"headline-lg-mobile":["Playfair Display"],"headline-editorial":["Playfair Display"],"headline-lg":["Playfair Display"],"title-md":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"display-lg-mobile":["Playfair Display"]},fontSize:{"title-lg":["18px",{"lineHeight":"26px","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-md":["24px",{"lineHeight":"32px","letterSpacing":"-0.01em","fontWeight":"400"}],"display-lg":["48px",{"lineHeight":"56px","letterSpacing":"-0.02em","fontWeight":"400"}],"script-flourish":["15px",{"lineHeight":"20px","letterSpacing":"0.01em","fontWeight":"400"}],"body-md":["14px",{"lineHeight":"22px","fontWeight":"400"}],"headline-lg-mobile":["26px",{"lineHeight":"32px","fontWeight":"500"}],"headline-editorial":["20px",{"lineHeight":"28px","fontWeight":"400"}],"headline-lg":["36px",{"lineHeight":"44px","letterSpacing":"-0.015em","fontWeight":"500"}],"title-md":["16px",{"lineHeight":"24px","fontWeight":"600"}],"body-lg":["16px",{"lineHeight":"26px","fontWeight":"400"}],"label-lg":["14px",{"lineHeight":"20px","letterSpacing":"0.01em","fontWeight":"500"}],"body-sm":["12px",{"lineHeight":"18px","fontWeight":"400"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.03em","fontWeight":"600"}],"display-lg-mobile":["32px",{"lineHeight":"40px","letterSpacing":"-0.01em","fontWeight":"400"}]}}}}</script></head><body class="bg-[#FBFBF8] text-on-surface font-body-md text-body-md antialiased selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 left-0 right-0 z-50 bg-[#FBFBF8]/90 backdrop-blur-md border-b border-[#E3E6DC]"><div class="h-20 max-w-[1360px] mx-auto px-6 lg:px-12 flex items-center justify-between gap-6"><div class="flex items-center gap-3 shrink-0"><div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-primary"><span class="material-symbols-outlined text-[20px]">potted_plant</span></div><div class="flex flex-col"><span class="font-headline-editorial text-headline-editorial text-[#2C352E] tracking-tight">FoodPulse AI</span><span class="font-script-flourish text-script-flourish italic text-tertiary -mt-1">Kitchen Network Demand Intelligence</span></div></div><nav class="hidden md:flex items-center gap-3" data-active-classes="text-primary font-semibold border-b border-primary pb-0.5"><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="forecaster" href="../the_kitchen_forecaster/code.html">Demand Simulator</a><span class="text-[#E3E6DC] select-none">•</span><a aria-current="page" class="transition-colors text-primary font-semibold border-b border-primary pb-0.5" data-path="weekly-trends" href="code.html">Weekly Trends</a><span class="text-[#E3E6DC] select-none">•</span><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="model-scorecard" href="../model_scorecard/code.html">Model Accuracy</a><span class="text-[#E3E6DC] select-none">•</span><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="project-notes" href="../project_notes/code.html">System Architecture</a></nav><div class="flex items-center gap-4 shrink-0"><div class="hidden sm:inline-flex items-center px-3.5 py-1 rounded-full bg-surface-container-low border border-[#E3E6DC] text-tertiary font-script-flourish text-script-flourish italic">Kitchen Network Demand Intelligence</div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-[#FBFBF8] min-h-screen"><div class="flex flex-col w-full">
 <div class="max-w-[1360px] mx-auto w-full px-6 lg:px-12 py-12 flex flex-col gap-10">
-<!-- Top Header: Centered Academic Atelier Style -->
 <div class="flex flex-col items-center text-center space-y-2.5 max-w-2xl mx-auto">
 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-low text-tertiary">
 <span class="material-symbols-outlined text-[15px] text-primary">timeline</span>
 <span class="font-label-md text-label-md tracking-wider uppercase text-on-surface-variant">Time-Series Decomposition</span>
 </div>
-<h1 class="font-headline-lg text-headline-lg text-[#2C352E] tracking-tight">
-        Macro Demand Timeline
-      </h1>
-<p class="font-script-flourish text-script-flourish italic text-tertiary">
-        145 weeks of historical demand &amp; 25-week SARIMA out-of-sample forecast
-      </p>
+<h1 class="font-headline-lg text-headline-lg text-[#2C352E] tracking-tight">Network Weekly Demand Trends</h1>
+<p class="font-script-flourish text-script-flourish italic text-tertiary">145 weeks of historical order demand across 77 fulfillment centers &amp; 25-week SARIMA out-of-sample forecast</p>
 </div>
-<!-- Main Focused Time-Series Presentation Sheet -->
+
 <div class="w-full bg-surface-container-lowest rounded-2xl shadow-sm p-6 sm:p-10 flex flex-col gap-8">
-<!-- Chart Controls & Minimalist Botanical Legend -->
 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
 <div class="flex flex-wrap items-center gap-6">
 <div class="flex items-center gap-2.5">
@@ -27,14 +21,14 @@
 </div>
 <div class="flex items-center gap-2.5">
 <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
-<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">SARIMA (0,1,2)(1,0,1)₄ Projection</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">SARIMA (0,1,2)(1,0,1)₄ Forecast Horizon</span>
 </div>
 <div class="flex items-center gap-2">
 <span class="w-4 h-2 rounded-sm bg-primary/20"></span>
 <span class="font-body-sm text-body-sm text-on-surface-variant">95% Confidence Corridor</span>
 </div>
 </div>
-<!-- Metric Granularity Switcher Pill -->
+
 <div class="inline-flex items-center p-1 rounded-full bg-surface-container-low">
 <button class="px-3.5 py-1 rounded-full bg-surface-container-lowest shadow-sm font-label-md text-label-md text-on-surface transition-all" type="button">
             Orders Volume
@@ -44,50 +38,50 @@
           </button>
 </div>
 </div>
-<!-- Main Wide Airy SVG Chart Canvas -->
+
 <div class="relative w-full overflow-x-auto select-none">
 <div class="min-w-[800px] w-full">
 <svg class="w-full h-auto overflow-visible font-body-sm" preserveaspectratio="xMidYMid meet" viewbox="0 0 1100 420">
 <defs>
-<!-- Gradient fill for the 95% Confidence Interval band -->
+
 <lineargradient id="confidenceGradient" x1="0" x2="0" y1="0" y2="1">
 <stop offset="0%" stop-color="#4a614f" stop-opacity="0.22"></stop>
 <stop offset="50%" stop-color="#4a614f" stop-opacity="0.10"></stop>
 <stop offset="100%" stop-color="#4a614f" stop-opacity="0.04"></stop>
 </lineargradient>
-<!-- Subtle atmospheric tint under the forward curve -->
+
 <lineargradient id="forwardUnderlay" x1="0" x2="0" y1="0" y2="1">
 <stop offset="0%" stop-color="#4a614f" stop-opacity="0.12"></stop>
 <stop offset="100%" stop-color="#4a614f" stop-opacity="0.0"></stop>
 </lineargradient>
-<!-- Filter for cursor glow -->
+
 <filter height="140%" id="softGlow" width="140%" x="-20%" y="-20%">
 <fegaussianblur result="blur" stddeviation="3"></fegaussianblur>
 <fecomposite in="SourceGraphic" in2="blur" operator="over"></fecomposite>
 </filter>
 </defs>
-<!-- Background subtle horizontal guides -->
+
 <g class="text-[#E3E6DC]">
-<!-- 1.0M level -->
+
 <line stroke="currentColor" stroke-dasharray="3 4" stroke-width="0.8" x1="70" x2="1060" y1="50" y2="50"></line>
-<text class="fill-outline text-[11px] font-mono" text-anchor="end" x="60" y="54">1,000k</text>
-<!-- 850k level -->
+<text class="fill-outline text-[11px] font-mono" text-anchor="end" x="60" y="54">10.0 Lakhs</text>
+
 <line stroke="currentColor" stroke-dasharray="3 4" stroke-width="0.8" x1="70" x2="1060" y1="120" y2="120"></line>
-<text class="fill-outline text-[11px] font-mono" text-anchor="end" x="60" y="124">850k</text>
-<!-- 700k level -->
+<text class="fill-outline text-[11px] font-mono" text-anchor="end" x="60" y="124">8.5 Lakhs</text>
+
 <line stroke="currentColor" stroke-dasharray="3 4" stroke-width="0.8" x1="70" x2="1060" y1="190" y2="190"></line>
-<text class="fill-outline text-[11px] font-mono" text-anchor="end" x="60" y="194">700k</text>
-<!-- 550k level -->
+<text class="fill-outline text-[11px] font-mono" text-anchor="end" x="60" y="194">7.0 Lakhs</text>
+
 <line stroke="currentColor" stroke-dasharray="3 4" stroke-width="0.8" x1="70" x2="1060" y1="260" y2="260"></line>
-<text class="fill-outline text-[11px] font-mono" text-anchor="end" x="60" y="264">550k</text>
-<!-- 400k level -->
+<text class="fill-outline text-[11px] font-mono" text-anchor="end" x="60" y="264">5.5 Lakhs</text>
+
 <line stroke="currentColor" stroke-dasharray="3 4" stroke-width="0.8" x1="70" x2="1060" y1="330" y2="330"></line>
-<text class="fill-outline text-[11px] font-mono" text-anchor="end" x="60" y="334">400k</text>
+<text class="fill-outline text-[11px] font-mono" text-anchor="end" x="60" y="334">4.0 Lakhs</text>
 </g>
-<!-- Transition Zone Divider (W145 Cutover point: x = 860) -->
+
 <line opacity="0.6" stroke="#768F7B" stroke-dasharray="4 4" stroke-width="1" x1="860" x2="860" y1="30" y2="345"></line>
 <text class="fill-primary font-script-flourish text-[13px] italic font-medium" text-anchor="middle" x="860" y="24">Model Convergence Boundary (W145)</text>
-<!-- 95% Confidence Corridor Area (W121 to W170 -> x: 740 to 1050) -->
+
 <path d="
               M 740,165 
               C 770,140 820,130 860,115
@@ -99,7 +93,7 @@
               C 820,160 770,165 740,165
               Z
             " fill="url(#confidenceGradient)"></path>
-<!-- Historical Demand Curve (Weeks 1 to 145) Smooth organic polyline/bezier path -->
+
 <path d="
               M 80,240 
               Q 110,210 135,225 
@@ -117,34 +111,34 @@
               T 810,135 
               T 860,140
             " fill="none" stroke="#2C352E" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path>
-<!-- Historical Ambient Seasonality Peaks & Flourishes -->
-<!-- Summer Spike W52 / Peak Annotation -->
+
+
 <g transform="translate(350, 150)">
 <circle fill="#FFFFFF" r="4" stroke="#2C352E" stroke-width="2"></circle>
 <line stroke="#737972" stroke-width="0.8" x1="0" x2="0" y1="-8" y2="-24"></line>
-<text class="fill-on-surface-variant font-label-md text-[10px]" text-anchor="middle" x="0" y="-30">Summer Solstice Peak</text>
+<text class="fill-on-surface-variant font-label-md text-[10px]" text-anchor="middle" x="0" y="-30">Quarterly Peak Surge</text>
 </g>
-<!-- Autumn Spike W104 Annotation -->
+
 <g transform="translate(640, 125)">
 <circle fill="#FFFFFF" r="4" stroke="#2C352E" stroke-width="2"></circle>
 <line stroke="#737972" stroke-width="0.8" x1="0" x2="0" y1="-8" y2="-24"></line>
-<text class="fill-on-surface-variant font-label-md text-[10px]" text-anchor="middle" x="0" y="-30">Harvest Surge (+28%)</text>
+<text class="fill-on-surface-variant font-label-md text-[10px]" text-anchor="middle" x="0" y="-30">Festival Surge (+28%)</text>
 </g>
-<!-- SARIMA Forward Forecast Curve (W145 to W170 -> x: 860 to 1050) -->
+
 <path d="
               M 860,140 
               C 890,130 920,155 950,138 
               C 980,120 1015,100 1050,115
             " fill="none" stroke="#4a614f" stroke-dasharray="none" stroke-linecap="round" stroke-width="2.5"></path>
-<!-- Key Projections Target Node -->
+
 <g transform="translate(1050, 115)">
 <circle class="animate-pulse" fill="#4a614f" opacity="0.25" r="6"></circle>
 <circle fill="#FFFFFF" r="3.5" stroke="#4a614f" stroke-width="2.2"></circle>
 <line stroke="#4a614f" stroke-width="0.8" x1="0" x2="0" y1="-8" y2="-32"></line>
 <rect fill="#4a614f" height="22" rx="11" width="84" x="-42" y="-56"></rect>
-<text class="fill-on-primary font-mono text-[10px] font-semibold" text-anchor="middle" x="0" y="-42">W170: 892k</text>
+<text class="fill-on-primary font-mono text-[10px] font-semibold" text-anchor="middle" x="0" y="-42">W170 Target: 8.92 Lakhs</text>
 </g>
-<!-- Horizon Time Axis Labels (Weeks) -->
+
 <g class="fill-outline text-[11px] font-mono">
 <text text-anchor="middle" x="80" y="370">W1</text>
 <text text-anchor="middle" x="210" y="370">W25</text>
@@ -156,12 +150,12 @@
 <text class="fill-primary" text-anchor="middle" x="955" y="370">W160</text>
 <text class="fill-primary" text-anchor="middle" x="1050" y="370">W170 (Target)</text>
 </g>
-<!-- Horizontal Baseline Spine -->
+
 <line stroke="#E3E6DC" stroke-width="1" x1="70" x2="1060" y1="345" y2="345"></line>
 </svg>
 </div>
 </div>
-<!-- Chart Footer Epilogue & Contextual Annotation -->
+
 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-4 border-t border-surface-container-high gap-4">
 <div class="flex items-center gap-2">
 <span class="material-symbols-outlined text-tertiary text-[18px]">verified</span>
@@ -170,30 +164,30 @@
           </span>
 </div>
 <div class="font-script-flourish text-script-flourish italic text-tertiary">
-          Akaike Information Criterion (AIC): <span class="font-mono text-body-sm not-italic text-on-surface">2,956.0</span>
+          Akaike Information Criterion (AIC): <span class="font-mono text-body-sm not-italic text-on-surface">2,956.03</span> • BIC: 2,971.02
 </div>
 </div>
 </div>
-<!-- Bottom Stats Bar: 3 Clean, Well-Spaced Atmospheric Numbers -->
+
 <div class="w-full bg-surface-container-lowest rounded-2xl shadow-sm py-8 px-6 sm:px-12">
 <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-surface-container-high text-center">
-<!-- Stat 1: 825k Average Orders -->
+
 <div class="flex flex-col items-center py-5 md:py-1 px-4 group">
 <span class="font-label-md text-label-md uppercase tracking-wider text-outline mb-1.5">
             Historical Weekly Mean
           </span>
 <div class="flex items-baseline justify-center gap-1.5">
 <span class="font-display-lg text-display-lg font-normal text-[#2C352E] tracking-tight">
-              825k
+              8.25 Lakhs
             </span>
-<span class="font-script-flourish text-script-flourish italic text-secondary">orders/wk</span>
+<span class="font-script-flourish text-script-flourish italic text-secondary">orders / week (Historical Average)</span>
 </div>
 <span class="font-body-sm text-body-sm text-on-surface-variant mt-1.5 flex items-center gap-1">
 <span class="material-symbols-outlined text-[14px] text-primary">arrow_upward</span>
             +3.8% steady annual baseline expansion
           </span>
 </div>
-<!-- Stat 2: 12-Week Quarterly Seasonality -->
+
 <div class="flex flex-col items-center py-5 md:py-1 px-4 group">
 <span class="font-label-md text-label-md uppercase tracking-wider text-outline mb-1.5">
             Quarterly Seasonality
@@ -209,7 +203,7 @@
             Harmonic quarterly cadence detected
           </span>
 </div>
-<!-- Stat 3: 95% SARIMA Confidence Interval -->
+
 <div class="flex flex-col items-center py-5 md:py-1 px-4 group">
 <span class="font-label-md text-label-md uppercase tracking-wider text-outline mb-1.5">
             Forecast Confidence
@@ -218,7 +212,7 @@
 <span class="font-display-lg text-display-lg font-normal text-[#2C352E] tracking-tight">
               95%
             </span>
-<span class="font-script-flourish text-script-flourish italic text-primary">CI Band</span>
+<span class="font-script-flourish text-script-flourish italic text-primary">95% Prediction Interval</span>
 </div>
 <span class="font-body-sm text-body-sm text-on-surface-variant mt-1.5 flex items-center gap-1">
 <span class="material-symbols-outlined text-[14px] text-primary">analytics</span>
@@ -227,7 +221,6 @@
 </div>
 </div>
 </div>
-<!-- Editorial Botanical Footnote -->
 <div class="flex items-center justify-center gap-3 pt-4 text-center">
 <span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span>
 <p class="font-script-flourish text-script-flourish italic text-tertiary max-w-xl">
@@ -236,24 +229,5 @@
 <span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span>
 </div>
 </div>
-</div></main><footer class="w-full bg-[#F5F6F1] border-t border-[#E3E6DC] mt-space-xl"><div class="max-w-[1360px] mx-auto px-6 lg:px-12 py-10 flex flex-col md:flex-row items-center justify-between gap-4"><div class="flex items-center gap-2"><span class="font-headline-editorial text-headline-editorial text-[#2C352E]">Demand Forecaster</span><span class="text-outline-variant">—</span><span class="font-script-flourish text-script-flourish italic text-tertiary">Predictive Analytics • Manipal University Jaipur</span></div><div class="font-body-sm text-body-sm text-on-surface-variant text-center md:text-right">Predictive Analysis Project • CSE Semester 5 • Manipal University Jaipur</div></div></footer>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  if (window.location.protocol === 'file:') {
-    const routeMap = {
-      '/': '../the_kitchen_forecaster/code.html',
-      '/forecaster': '../the_kitchen_forecaster/code.html',
-      '/trends': '../weekly_trends/code.html',
-      '/scorecard': '../model_scorecard/code.html',
-      '/notes': '../project_notes/code.html'
-    };
-    document.querySelectorAll('a').forEach(function(a) {
-      const href = a.getAttribute('href');
-      if (routeMap[href]) {
-        a.setAttribute('href', routeMap[href]);
-      }
-    });
-  }
-});
-</script>
+</div></main><footer class="w-full bg-[#F5F6F1] border-t border-[#E3E6DC] mt-space-xl"><div class="max-w-[1360px] mx-auto px-6 lg:px-12 py-10 flex flex-col md:flex-row items-center justify-between gap-4"><div class="flex items-center gap-2"><span class="font-headline-editorial text-headline-editorial text-[#2C352E]">FoodPulse AI</span><span class="text-outline-variant">—</span><span class="font-script-flourish text-script-flourish italic text-tertiary">Operational Demand Intelligence &amp; Supply Chain Platform</span></div><div class="font-body-sm text-body-sm text-on-surface-variant text-center md:text-right">© 2026 FoodPulse AI Technologies. Real-time Kitchen Logistics &amp; Demand Intelligence.</div></div></footer>
 </body></html>
