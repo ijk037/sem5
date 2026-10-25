@@ -1,15 +1,7 @@
-*.csv
-*.joblib
-*.ipynb
-*.pdf
-archive/
-models/
-model_plots/
-time_series_plots/
-eda_plots/
-**/server.py
-**/__pycache__/
-**/*.pyc
-**/*.py
+pa - food project/
 se - rcms project/
 aisc - map project/
+**/server.py
+**/__pycache__/
+**/*.py
+**/*.pyc
