@@ -3,7 +3,6 @@
 <html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><title>System Architecture | FoodPulse AI</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"outline":"#737972","on-tertiary-fixed":"#0b1f13","on-tertiary":"#ffffff","primary-fixed-dim":"#b3cdb7","inverse-primary":"#b3cdb7","primary-container":"#627a67","on-primary-fixed":"#092012","surface-container-highest":"#dbe5db","on-primary-container":"#f6fff4","surface-container-low":"#ecf6ec","surface-dim":"#d3ddd2","tertiary-container":"#647a69","inverse-surface":"#2a332c","surface-container-lowest":"#ffffff","error-container":"#ffdad6","on-primary-fixed-variant":"#354c3b","background":"#f2fcf1","surface-container-high":"#e1ebe0","inverse-on-surface":"#eaf3e9","surface-container":"#e7f1e6","tertiary-fixed-dim":"#b5ccb9","on-tertiary-container":"#f6fff5","secondary-fixed":"#ffdbcd","on-secondary-container":"#793f24","secondary-fixed-dim":"#ffb597","surface":"#f2fcf1","on-secondary-fixed-variant":"#6f371d","secondary":"#8c4e32","surface-bright":"#f2fcf1","outline-variant":"#c3c8c1","tertiary":"#4b6151","tertiary-fixed":"#d0e9d4","error":"#ba1a1a","on-background":"#151e17","secondary-container":"#ffae8b","on-error":"#ffffff","on-surface":"#151e17","primary-fixed":"#cee9d2","on-error-container":"#93000a","on-primary":"#ffffff","on-surface-variant":"#424843","on-tertiary-fixed-variant":"#374c3d","surface-tint":"#4c6452","on-secondary-fixed":"#360f00","surface-variant":"#dbe5db","primary":"#4a614f","on-secondary":"#ffffff"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"gutter-mobile":"1rem","space-md":"1rem","margin":"3rem","margin-mobile":"1.25rem","gutter":"1.5rem","space-lg":"1.75rem","space-xl":"2.75rem","space-xs":"0.25rem","space-sm":"0.5rem"},fontFamily:{"title-lg":["Plus Jakarta Sans"],"headline-md":["Playfair Display"],"display-lg":["Playfair Display"],"script-flourish":["Playfair Display"],"body-md":["Plus Jakarta Sans"],"headline-lg-mobile":["Playfair Display"],"headline-editorial":["Playfair Display"],"headline-lg":["Playfair Display"],"title-md":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"display-lg-mobile":["Playfair Display"]},fontSize:{"title-lg":["18px",{"lineHeight":"26px","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-md":["24px",{"lineHeight":"32px","letterSpacing":"-0.01em","fontWeight":"400"}],"display-lg":["48px",{"lineHeight":"56px","letterSpacing":"-0.02em","fontWeight":"400"}],"script-flourish":["15px",{"lineHeight":"20px","letterSpacing":"0.01em","fontWeight":"400"}],"body-md":["14px",{"lineHeight":"22px","fontWeight":"400"}],"headline-lg-mobile":["26px",{"lineHeight":"32px","fontWeight":"500"}],"headline-editorial":["20px",{"lineHeight":"28px","fontWeight":"400"}],"headline-lg":["36px",{"lineHeight":"44px","letterSpacing":"-0.015em","fontWeight":"500"}],"title-md":["16px",{"lineHeight":"24px","fontWeight":"600"}],"body-lg":["16px",{"lineHeight":"26px","fontWeight":"400"}],"label-lg":["14px",{"lineHeight":"20px","letterSpacing":"0.01em","fontWeight":"500"}],"body-sm":["12px",{"lineHeight":"18px","fontWeight":"400"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.03em","fontWeight":"600"}],"display-lg-mobile":["32px",{"lineHeight":"40px","letterSpacing":"-0.01em","fontWeight":"400"}]}}}}</script></head><body class="bg-[#FBFBF8] text-on-surface font-body-md text-body-md antialiased selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 left-0 right-0 z-50 bg-[#FBFBF8]/90 backdrop-blur-md border-b border-[#E3E6DC]"><div class="h-20 max-w-[1360px] mx-auto px-6 lg:px-12 flex items-center justify-between gap-6"><div class="flex items-center gap-3 shrink-0"><div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-primary"><span class="material-symbols-outlined text-[20px]">potted_plant</span></div><div class="flex flex-col"><span class="font-headline-editorial text-headline-editorial text-[#2C352E] tracking-tight">FoodPulse AI</span><span class="font-script-flourish text-script-flourish italic text-tertiary -mt-1">Kitchen Network Demand Intelligence</span></div></div><nav class="hidden md:flex items-center gap-3" data-active-classes="text-primary font-semibold border-b border-primary pb-0.5"><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="forecaster" href="../the_kitchen_forecaster/code.html">Demand Simulator</a><span class="text-[#E3E6DC] select-none">•</span><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="weekly-trends" href="../weekly_trends/code.html">Weekly Trends</a><span class="text-[#E3E6DC] select-none">•</span><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="model-scorecard" href="../model_scorecard/code.html">Model Accuracy</a><span class="text-[#E3E6DC] select-none">•</span><a aria-current="page" class="transition-colors text-primary font-semibold border-b border-primary pb-0.5" data-path="project-notes" href="code.html">System Architecture</a></nav><div class="flex items-center gap-4 shrink-0"><div class="hidden sm:inline-flex items-center px-3.5 py-1 rounded-full bg-surface-container-low border border-[#E3E6DC] text-tertiary font-script-flourish text-script-flourish italic">Kitchen Network Demand Intelligence</div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-[#FBFBF8] min-h-screen"><div class="flex flex-col w-full">
 <section class="relative w-full max-w-[1360px] mx-auto px-6 lg:px-12 pt-8 pb-12 overflow-hidden">
-
 <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-[680px] h-[340px] bg-gradient-to-b from-primary-fixed/20 via-surface-container-low/40 to-transparent blur-3xl pointer-events-none -z-10 rounded-full"></div>
 <div class="flex flex-col items-center text-center space-y-3">
 <div class="relative flex items-center justify-center w-14 h-14 rounded-full bg-surface-container-lowest shadow-sm mb-1">
@@ -30,12 +29,9 @@
 </div>
 </div>
 </section>
-
 <section class="w-full max-w-5xl mx-auto px-6 lg:px-8 pb-20">
 <div class="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16 items-start">
-
 <article class="md:col-span-7 flex flex-col space-y-12">
-
 <div class="space-y-1">
 <p class="font-label-md text-label-md uppercase tracking-wider text-secondary font-semibold">Platform Architecture</p>
 <p class="font-title-md text-title-md text-[#2C352E]">
@@ -47,7 +43,6 @@
 <span>Dataset: 77 Cloud Fulfillment Hubs</span>
 </div>
 </div>
-
 <div class="space-y-4">
 <div class="flex items-baseline justify-between border-b-0 pb-1">
 <h2 class="font-headline-md text-headline-md text-[#2C352E]">
@@ -64,7 +59,6 @@
 </div>
 </div>
 </div>
-
 <div class="bg-surface-container-low p-6 rounded-xl space-y-4">
 <div class="flex items-center justify-between">
 <span class="font-label-md text-label-md text-tertiary uppercase tracking-wider">Methodology Topology</span>
@@ -72,28 +66,21 @@
 </div>
 <div class="w-full bg-surface-container-lowest rounded-lg p-4 shadow-sm">
 <svg class="w-full h-32" fill="none" viewbox="0 0 520 120" xmlns="http://www.w3.org/2000/svg">
-
 <rect fill="#F2FCF1" height="44" rx="8" stroke="#CEE9D2" stroke-width="1.5" width="100" x="10" y="38"></rect>
 <text fill="#151E17" font-family="Plus Jakarta Sans" font-size="10" font-weight="600" text-anchor="middle" x="60" y="58">Raw Orders</text>
 <text fill="#737972" font-family="Plus Jakarta Sans" font-size="8" text-anchor="middle" x="60" y="72">77 Fulfillment Ctrs</text>
-
 <path d="M110 60 L140 60" stroke="#768F7B" stroke-dasharray="3 3" stroke-width="1.5"></path>
 <polygon fill="#768F7B" points="140,57 146,60 140,63"></polygon>
-
 <rect fill="#F2FCF1" height="44" rx="8" stroke="#CEE9D2" stroke-width="1.5" width="105" x="146" y="38"></rect>
 <text fill="#151E17" font-family="Plus Jakarta Sans" font-size="10" font-weight="600" text-anchor="middle" x="198" y="58">Rhythm Filtering</text>
 <text fill="#737972" font-family="Plus Jakarta Sans" font-size="8" text-anchor="middle" x="198" y="72">STL &amp; Fourier Harmonics</text>
-
 <path d="M251 60 L280 60" stroke="#768F7B" stroke-dasharray="3 3" stroke-width="1.5"></path>
 <polygon fill="#768F7B" points="280,57 286,60 280,63"></polygon>
-
 <rect fill="#ECEFE8" height="44" rx="8" stroke="#D0E9D4" stroke-width="1.5" width="105" x="286" y="38"></rect>
 <text fill="#4A614F" font-family="Plus Jakarta Sans" font-size="10" font-weight="600" text-anchor="middle" x="338" y="58">LightGBM Log1p</text>
 <text fill="#8C4E32" font-family="Playfair Display" font-size="8" font-style="italic" text-anchor="middle" x="338" y="72">4w rolling momentum</text>
-
 <path d="M391 60 L418 60" stroke="#768F7B" stroke-dasharray="3 3" stroke-width="1.5"></path>
 <polygon fill="#768F7B" points="418,57 424,60 418,63"></polygon>
-
 <rect fill="#627A67" height="60" rx="8" width="86" x="424" y="30"></rect>
 <text fill="#F6FFF4" font-family="Plus Jakarta Sans" font-size="10" font-weight="700" text-anchor="middle" x="467" y="55">SARIMA</text>
 <text fill="#CEE9D2" font-family="Plus Jakarta Sans" font-size="8" text-anchor="middle" x="467" y="68">(0,1,2)(1,0,1)₄</text>
@@ -104,7 +91,6 @@
             Figure 1.1 — Hierarchical data transformation from raw point-of-sale logs to multiplicative seasonal forecast horizons.
           </p>
 </div>
-
 <div class="space-y-6">
 <div class="space-y-1">
 <h2 class="font-headline-md text-headline-md text-[#2C352E]">
@@ -114,7 +100,6 @@
               stepwise modeling architecture
             </p>
 </div>
-
 <div class="group relative bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
 <div class="flex items-start gap-4">
 <span class="flex items-center justify-center w-8 h-8 rounded-full bg-surface-container text-primary font-title-md text-title-md shrink-0">
@@ -135,7 +120,6 @@
 </div>
 </div>
 </div>
-
 <div class="group relative bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
 <div class="flex items-start gap-4">
 <span class="flex items-center justify-center w-8 h-8 rounded-full bg-surface-container text-primary font-title-md text-title-md shrink-0">
@@ -156,7 +140,6 @@
 </div>
 </div>
 </div>
-
 <div class="group relative bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
 <div class="flex items-start gap-4">
 <span class="flex items-center justify-center w-8 h-8 rounded-full bg-secondary/15 text-secondary font-title-md text-title-md shrink-0">
@@ -177,7 +160,6 @@
 </div>
 </div>
 </div>
-
 <div class="group relative bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
 <div class="flex items-start gap-4">
 <span class="flex items-center justify-center w-8 h-8 rounded-full bg-surface-container text-primary font-title-md text-title-md shrink-0">
@@ -213,75 +195,96 @@
 </div>
 </blockquote>
 </article>
-
 <aside class="md:col-span-5 sticky top-28 space-y-6">
-
-<div class="bg-surface-container-lowest rounded-2xl p-8 shadow-md space-y-6">
-
+<!-- Card 1: Core Machine Learning Pipelines -->
+<div class="bg-surface-container-lowest rounded-2xl p-7 shadow-sm space-y-5">
 <div class="space-y-1">
 <div class="flex items-center justify-between">
-<span class="font-label-md text-label-md text-secondary uppercase tracking-widest font-semibold">Repository</span>
-<span class="material-symbols-outlined text-tertiary text-[20px]">science</span>
+<span class="font-label-md text-label-md text-secondary uppercase tracking-widest font-semibold">Engine Architecture</span>
+<span class="material-symbols-outlined text-tertiary text-[20px]">account_tree</span>
 </div>
-<h3 class="font-headline-md text-headline-md text-[#2C352E]">Platform Pipelines &amp; Models</h3>
-<p class="font-script-flourish text-script-flourish italic text-tertiary">production model pipelines</p>
+<h3 class="font-headline-md text-headline-md text-[#2C352E]">Core Model Pipelines</h3>
+<p class="font-script-flourish text-script-flourish italic text-tertiary">click any pipeline module to inspect architecture &amp; artifacts</p>
 </div>
-<div class="space-y-3 pt-2">
-
-<a class="group flex items-center justify-between p-4 rounded-xl bg-surface-container-low hover:bg-surface-container transition-all" href="../the_kitchen_forecaster/code.html"><span>Launch Demand Simulator</span><span class="material-symbols-outlined text-[15px]">arrow_forward</span></a>
-
-<a class="group flex items-center justify-between p-4 rounded-xl bg-surface-container-low hover:bg-surface-container transition-all" href="#artifact-03">
-<div class="flex items-center gap-3.5 min-w-0">
+<!-- 3 Pipeline Modules (Interactive Buttons) -->
+<div class="space-y-3 pt-1">
+<!-- Item 1: Demand Modeling Pipeline -->
+<button class="w-full text-left group flex items-center justify-between p-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-all cursor-pointer border border-transparent hover:border-surface-container-highest" onclick="openPipelineModal('modeling')" type="button">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-9 h-9 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[19px]">model_training</span>
+</div>
+<div class="truncate">
+<div class="font-body-md text-body-md font-semibold text-[#2C352E] truncate">Demand Modeling Pipeline</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant font-mono">02_predictive_modeling.ipynb</div>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0 ml-2">
+<span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-mono text-[11px] font-semibold">MAE: 71.84</span>
+<div class="w-7 h-7 rounded-full bg-secondary/10 flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-on-secondary transition-colors">
+<span class="material-symbols-outlined text-[16px]">info</span>
+</div>
+</div>
+</button>
+<!-- Item 2: Time Series Forecasting Pipeline -->
+<button class="w-full text-left group flex items-center justify-between p-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-all cursor-pointer border border-transparent hover:border-surface-container-highest" onclick="openPipelineModal('forecasting')" type="button">
+<div class="flex items-center gap-3 min-w-0">
 <div class="w-9 h-9 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary shrink-0 shadow-sm group-hover:scale-105 transition-transform">
 <span class="material-symbols-outlined text-[19px]">query_stats</span>
 </div>
 <div class="truncate">
-<div class="font-body-md text-body-md font-semibold text-[#2C352E] truncate">Time Series Forecasting Pipeline</div>
-<div class="font-body-sm text-body-sm text-on-surface-variant font-mono">
-                    03_time_series_forecasting.ipynb
-                  </div>
+<div class="font-body-md text-body-md font-semibold text-[#2C352E] truncate">Macro Time-Series Forecast</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant font-mono">03_time_series_forecasting.ipynb</div>
 </div>
 </div>
-<div class="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-on-secondary transition-colors shrink-0 ml-2">
-<span class="material-symbols-outlined text-[18px]">arrow_downward</span>
+<div class="flex items-center gap-2 shrink-0 ml-2">
+<span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-mono text-[11px] font-semibold">MAPE: 9.64%</span>
+<div class="w-7 h-7 rounded-full bg-secondary/10 flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-on-secondary transition-colors">
+<span class="material-symbols-outlined text-[16px]">info</span>
 </div>
-</a>
-
-<a class="group flex items-center justify-between p-4 rounded-xl bg-surface-container-low hover:bg-surface-container transition-all" href="#artifact-pdf">
-<div class="flex items-center gap-3.5 min-w-0">
+</div>
+</button>
+<!-- Item 3: Exploratory Data Analysis & Feature Store -->
+<button class="w-full text-left group flex items-center justify-between p-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container transition-all cursor-pointer border border-transparent hover:border-surface-container-highest" onclick="openPipelineModal('eda')" type="button">
+<div class="flex items-center gap-3 min-w-0">
 <div class="w-9 h-9 rounded-full bg-surface-container-lowest flex items-center justify-center text-secondary shrink-0 shadow-sm group-hover:scale-105 transition-transform">
-<span class="material-symbols-outlined text-[19px]">picture_as_pdf</span>
+<span class="material-symbols-outlined text-[19px]">insights</span>
 </div>
 <div class="truncate">
-<div class="font-body-md text-body-md font-semibold text-[#2C352E] truncate">Exploratory Data Analysis</div>
+<div class="font-body-md text-body-md font-semibold text-[#2C352E] truncate">Exploratory Data &amp; Feature Store</div>
 <div class="font-body-sm text-body-sm text-on-surface-variant font-mono">01_exploratory_data_analysis.ipynb</div>
 </div>
 </div>
-<div class="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-on-secondary transition-colors shrink-0 ml-2">
-<span class="material-symbols-outlined text-[18px]">north_east</span>
+<div class="flex items-center gap-2 shrink-0 ml-2">
+<span class="px-2 py-0.5 rounded-full bg-secondary/10 text-secondary font-mono text-[11px] font-semibold">77 Hubs</span>
+<div class="w-7 h-7 rounded-full bg-secondary/10 flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-on-secondary transition-colors">
+<span class="material-symbols-outlined text-[16px]">info</span>
 </div>
-</a>
 </div>
-
-<div class="p-4 rounded-xl bg-surface-container space-y-2 text-on-surface-variant">
+</button>
+</div>
+<!-- Runtime Environment Box -->
+<div class="p-4 rounded-xl bg-surface-container/60 space-y-2 text-on-surface-variant border border-surface-container-high">
 <div class="flex items-center justify-between font-label-md text-label-md text-primary font-semibold">
-<span>Environment Check</span>
-<span class="flex items-center gap-1 text-[11px] font-mono text-tertiary">
+<span>Production Runtime</span>
+<span class="flex items-center gap-1.5 text-[11px] font-mono text-tertiary">
 <span class="w-2 h-2 rounded-full bg-primary inline-block"></span>
-                py3.11-reproducible
-              </span>
+          Python 3.13 Core
+        </span>
 </div>
 <p class="font-body-sm text-body-sm text-on-surface-variant">
-              Target seed locked at <code class="text-on-surface font-mono font-semibold">42</code>. Models trained using LightGBM, Scikit-learn, and Statsmodels on Python 3.13.
-            </p>
+        Target seed locked at <code class="text-on-surface font-mono font-semibold">42</code>. Engines compiled with LightGBM v4.2, Scikit-learn v1.6, and Statsmodels v0.14.
+      </p>
 </div>
-<div class="pt-2 text-center border-t border-transparent">
-<p class="font-body-sm text-body-sm text-on-surface-variant italic leading-normal">
-              Production Deployment • Real-time Demand Intelligence System.
-            </p>
+<!-- Status pill -->
+<div class="pt-1 text-center">
+<span class="inline-flex items-center gap-1.5 text-[12px] font-medium text-tertiary">
+<span class="material-symbols-outlined text-[15px] text-primary">verified</span>
+        Production Deployment • Real-time Demand Intelligence System
+      </span>
 </div>
 </div>
-
+<!-- Card 2: Feature Schema & Operational Taxonomy -->
 <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm space-y-4">
 <div class="flex items-center gap-3">
 <div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary">
@@ -289,33 +292,204 @@
 </div>
 <div>
 <h4 class="font-title-md text-title-md text-[#2C352E]">Feature Schema</h4>
-<p class="font-script-flourish text-script-flourish italic text-tertiary">meal category and cuisine taxonomy</p>
+<p class="font-script-flourish text-script-flourish italic text-tertiary">operational features &amp; demand taxonomy</p>
 </div>
 </div>
 <div class="space-y-2 font-body-sm text-body-sm text-on-surface-variant">
-<div class="flex justify-between py-1 border-b-0 bg-surface-container-low px-3 rounded">
+<div class="flex justify-between py-1.5 bg-surface-container-low px-3 rounded">
 <span class="font-medium text-on-surface">cuisine_category</span>
 <span class="font-mono text-tertiary">Indian, Continental, Italian, Thai</span>
 </div>
-<div class="flex justify-between py-1 border-b-0 bg-surface-container-low px-3 rounded">
+<div class="flex justify-between py-1.5 bg-surface-container-low px-3 rounded">
 <span class="font-medium text-on-surface">op_area_km2</span>
 <span class="font-mono text-tertiary">Continuous [0.9 - 7.0 km²]</span>
 </div>
-<div class="flex justify-between py-1 border-b-0 bg-surface-container-low px-3 rounded">
+<div class="flex justify-between py-1.5 bg-surface-container-low px-3 rounded">
+<span class="font-medium text-on-surface">checkout_price</span>
+<span class="font-mono text-tertiary">₹89 - ₹728 (Mean ₹332.24)</span>
+</div>
+<div class="flex justify-between py-1.5 bg-surface-container-low px-3 rounded">
 <span class="font-medium text-on-surface">discount_pct</span>
 <span class="font-mono text-tertiary">Bounded [0.0% - 72.8%]</span>
 </div>
-<div class="flex justify-between py-1 border-b-0 bg-surface-container-low px-3 rounded">
-<span class="font-medium text-on-surface">homepage_featured</span>
-<span class="font-mono text-tertiary">Boolean flag {0, 1}</span>
+<div class="flex justify-between py-1.5 bg-surface-container-low px-3 rounded">
+<span class="font-medium text-on-surface">promotions</span>
+<span class="font-mono text-tertiary">homepage (10.9%), email (8.1%)</span>
 </div>
 </div>
-<div class="pt-2 text-right">
-<a class="inline-flex items-center gap-1 font-body-sm text-body-sm text-secondary font-semibold hover:underline" href="../the_kitchen_forecaster/code.html"><span>Launch Demand Simulator</span><span class="material-symbols-outlined text-[15px]">arrow_forward</span></a>
+<div class="pt-2">
+<a class="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-secondary hover:bg-secondary/90 text-on-secondary font-title-md text-title-md shadow-sm transition-all text-center cursor-pointer" href="../the_kitchen_forecaster/code.html">
+<span>Launch Demand Simulator</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
 </div>
 </div>
 </aside>
 </div>
 </section>
 </div></main><footer class="w-full bg-[#F5F6F1] border-t border-[#E3E6DC] mt-space-xl"><div class="max-w-[1360px] mx-auto px-6 lg:px-12 py-10 flex flex-col md:flex-row items-center justify-between gap-4"><div class="flex items-center gap-2"><span class="font-headline-editorial text-headline-editorial text-[#2C352E]">FoodPulse AI</span><span class="text-outline-variant">—</span><span class="font-script-flourish text-script-flourish italic text-tertiary">Operational Demand Intelligence &amp; Supply Chain Platform</span></div><div class="font-body-sm text-body-sm text-on-surface-variant text-center md:text-right">© 2026 FoodPulse AI Technologies. Real-time Kitchen Logistics &amp; Demand Intelligence.</div></div></footer>
+
+<!-- Pipeline Inspection Modal -->
+<div class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto" id="pipeline-modal" onclick="handleModalBackdropClick(event)">
+<div class="relative w-full max-w-2xl bg-[#FBFBF8] rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6 border border-[#E3E6DC] my-8 animate-in fade-in zoom-in-95 duration-200">
+<!-- Header -->
+<div class="flex items-start justify-between pb-4 border-b border-[#E3E6DC]">
+<div class="space-y-1">
+<div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-surface-container text-tertiary text-[11px] font-mono" id="modal-tag">
+          Production Pipeline
+        </div>
+<h3 class="font-headline-md text-headline-md text-[#2C352E]" id="modal-title">Pipeline Title</h3>
+<p class="font-mono text-body-sm text-secondary" id="modal-file">filename.ipynb</p>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest transition-colors cursor-pointer" onclick="closePipelineModal()" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Core Metrics Grid -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="modal-metrics">
+<!-- Injected dynamically -->
+</div>
+<!-- Architecture & Findings -->
+<div class="space-y-3">
+<h4 class="font-title-md text-title-md text-[#2C352E] flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-primary">verified</span>
+        Technical Specifications &amp; Architecture
+      </h4>
+<ul class="space-y-2 font-body-sm text-body-sm text-on-surface-variant list-disc pl-5" id="modal-highlights">
+<!-- Injected dynamically -->
+</ul>
+</div>
+<!-- Actions -->
+<div class="pt-4 border-t border-[#E3E6DC] flex flex-col sm:flex-row items-center justify-between gap-3">
+<a class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[#C27A5B] hover:bg-[#B16B4D] text-white font-title-md text-title-md shadow-sm transition-all cursor-pointer" download="" href="#" id="modal-download-btn">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span>Download Notebook (.ipynb)</span>
+</a>
+<div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+<a class="inline-flex items-center gap-1.5 font-body-sm text-body-sm text-primary font-semibold hover:underline" href="#" id="modal-action-btn">
+<span id="modal-action-text">Explore View</span>
+</a>
+<button class="px-4 py-2 rounded-full bg-surface-container hover:bg-surface-container-highest font-body-sm text-body-sm text-on-surface transition-colors cursor-pointer" onclick="closePipelineModal()" type="button">
+          Close
+        </button>
+</div>
+</div>
+</div>
+</div>
+<script>
+const PIPELINE_DETAILS = {
+  modeling: {
+    tag: "Gradient Boosted Regressor • ML Pipeline",
+    title: "Demand Modeling Pipeline",
+    file: "02_predictive_modeling.ipynb",
+    downloadUrl: "../../02_predictive_modeling.ipynb",
+    metrics: [
+      { label: "MAE", value: "71.84", sub: "Orders (Holdout)" },
+      { label: "RMSE", value: "168.77", sub: "Orders" },
+      { label: "R² Accuracy", value: "78.73%", sub: "Unseen Weeks" },
+      { label: "Holdout", value: "W121–145", sub: "82,150 Tx" }
+    ],
+    highlights: [
+      "LightGBM Regressor trained with logarithmic target transform log1p(num_orders) to handle non-linear promotional spikes.",
+      "Engineered rolling momentum features (orders_lag_1w, rolling_mean_4w) accounting for 44%+ of split gain.",
+      "Evaluated strictly on unseen out-of-sample holdout across 82,150 delivery transactions (Weeks 121–145).",
+      "Outperforms Poisson Count GLM (MAE 106.02) and Ridge Linear regression (MAE 96.49) by over 30%."
+    ],
+    actionUrl: "../model_scorecard/code.html",
+    actionLabel: "View in Model Scorecard →"
+  },
+  forecasting: {
+    tag: "Time-Series Econometrics • Macro Horizon",
+    title: "Macro Seasonal Forecasting Pipeline",
+    file: "03_time_series_forecasting.ipynb",
+    downloadUrl: "../../03_time_series_forecasting.ipynb",
+    metrics: [
+      { label: "MAPE", value: "9.64%", sub: "Out-of-sample" },
+      { label: "AIC", value: "2,956.03", sub: "Model Fit" },
+      { label: "Horizon", value: "25 Weeks", sub: "Forward Curve" },
+      { label: "ADF p-val", value: "2.71e-7", sub: "Stationary (d=1)" }
+    ],
+    highlights: [
+      "Decomposes 145 weeks of historical order demand across 77 fulfillment centers into harmonic quarterly cycles.",
+      "SARIMA (0,1,2)(1,0,1)₄ multiplicative seasonal specification captures 12-week recurrent ordering rhythms.",
+      "Residual autocorrelation tests (Ljung-Box p > 0.05) validate zero unmodeled serial correlation.",
+      "Produces 95% confidence corridors for commissary procurement and courier fleet provisioning."
+    ],
+    actionUrl: "../weekly_trends/code.html",
+    actionLabel: "View in Weekly Trends →"
+  },
+  eda: {
+    tag: "Exploratory Data Discovery • Feature Store",
+    title: "Exploratory Data & Feature Store",
+    file: "01_exploratory_data_analysis.ipynb",
+    downloadUrl: "../../01_exploratory_data_analysis.ipynb",
+    metrics: [
+      { label: "Total Orders", value: "11.95 Cr", sub: "456,548 Tx" },
+      { label: "Weekly Mean", value: "8.25 Lakhs", sub: "Orders / Week" },
+      { label: "Hubs", value: "77 Centers", sub: "51 Indian Cities" },
+      { label: "Menu Items", value: "51 Meals", sub: "4 Cuisines" }
+    ],
+    highlights: [
+      "Cleaned and validated 145 weeks of real kitchen fulfillment telemetry across Type A, B, and C fulfillment centers.",
+      "Analyzed price elasticity across 4 cuisines (Indian, Continental, Italian, Thai); checkout prices range from ₹89 to ₹728.",
+      "Quantified promotional response: homepage featured banners yield +30.8% order volume expansion.",
+      "Generated clean feature dataset saved to food_demand_eda_feature_engineered.csv."
+    ],
+    actionUrl: "../the_kitchen_forecaster/code.html",
+    actionLabel: "Launch Demand Simulator →"
+  }
+};
+
+function openPipelineModal(key) {
+  const data = PIPELINE_DETAILS[key];
+  if (!data) return;
+
+  document.getElementById('modal-tag').textContent = data.tag;
+  document.getElementById('modal-title').textContent = data.title;
+  document.getElementById('modal-file').textContent = data.file;
+
+  const metricsContainer = document.getElementById('modal-metrics');
+  metricsContainer.innerHTML = '';
+  data.metrics.forEach(m => {
+    const card = document.createElement('div');
+    card.className = 'bg-surface-container-low p-3 rounded-xl border border-surface-container-high text-center';
+    card.innerHTML = `<span class="block text-[11px] font-label-md uppercase tracking-wider text-outline">${m.label}</span><span class="block font-title-lg text-title-lg font-bold text-on-surface font-mono my-0.5">${m.value}</span><span class="block text-[11px] font-body-sm text-tertiary">${m.sub}</span>`;
+    metricsContainer.appendChild(card);
+  });
+
+  const highlightsContainer = document.getElementById('modal-highlights');
+  highlightsContainer.innerHTML = '';
+  data.highlights.forEach(h => {
+    const li = document.createElement('li');
+    li.textContent = h;
+    highlightsContainer.appendChild(li);
+  });
+
+  const downloadBtn = document.getElementById('modal-download-btn');
+  downloadBtn.setAttribute('href', data.downloadUrl);
+  downloadBtn.setAttribute('download', data.file);
+
+  const actionBtn = document.getElementById('modal-action-btn');
+  actionBtn.setAttribute('href', data.actionUrl);
+  document.getElementById('modal-action-text').textContent = data.actionLabel;
+
+  document.getElementById('pipeline-modal').classList.remove('hidden');
+}
+
+function closePipelineModal() {
+  document.getElementById('pipeline-modal').classList.add('hidden');
+}
+
+function handleModalBackdropClick(e) {
+  if (e.target.id === 'pipeline-modal') {
+    closePipelineModal();
+  }
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closePipelineModal();
+  }
+});
+</script>
 </body></html>
