@@ -1,0 +1,10 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/", "destination": "/the_kitchen_forecaster/code.html" },
+    { "source": "/forecaster", "destination": "/the_kitchen_forecaster/code.html" },
+    { "source": "/trends", "destination": "/weekly_trends/code.html" },
+    { "source": "/scorecard", "destination": "/model_scorecard/code.html" },
+    { "source": "/notes", "destination": "/project_notes/code.html" }
+  ]
+}
