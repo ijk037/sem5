@@ -4,12 +4,12 @@ import json
 import joblib
 import numpy as np
 import pandas as pd
-from flask import Flask, request, jsonify, send_from_directory, render_template_string
+from flask import Flask, request, jsonify, send_from_directory
 
 # Determine base paths
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.dirname(CURRENT_DIR)
-MODELS_DIR = os.path.join(PROJECT_ROOT, "models")
+DASH_DIR = os.path.join(CURRENT_DIR, "stitch_food_delivery_demand_analytics_dashboard")
+MODELS_DIR = os.path.join(CURRENT_DIR, "models")
 MODEL_PATH = os.path.join(MODELS_DIR, "best_demand_lgbm.joblib")
 
 app = Flask(__name__)
@@ -29,36 +29,36 @@ else:
 @app.route("/")
 @app.route("/forecaster")
 def page_forecaster():
-    return send_from_directory(os.path.join(CURRENT_DIR, "the_kitchen_forecaster"), "code.html")
+    return send_from_directory(os.path.join(DASH_DIR, "the_kitchen_forecaster"), "code.html")
 
 @app.route("/trends")
 def page_trends():
-    return send_from_directory(os.path.join(CURRENT_DIR, "weekly_trends"), "code.html")
+    return send_from_directory(os.path.join(DASH_DIR, "weekly_trends"), "code.html")
 
 @app.route("/scorecard")
 def page_scorecard():
-    return send_from_directory(os.path.join(CURRENT_DIR, "model_scorecard"), "code.html")
+    return send_from_directory(os.path.join(DASH_DIR, "model_scorecard"), "code.html")
 
 @app.route("/notes")
 def page_notes():
-    return send_from_directory(os.path.join(CURRENT_DIR, "project_notes"), "code.html")
+    return send_from_directory(os.path.join(DASH_DIR, "project_notes"), "code.html")
 
 # Static asset serving for screen.png
 @app.route("/the_kitchen_forecaster/<path:filename>")
 def static_forecaster(filename):
-    return send_from_directory(os.path.join(CURRENT_DIR, "the_kitchen_forecaster"), filename)
+    return send_from_directory(os.path.join(DASH_DIR, "the_kitchen_forecaster"), filename)
 
 @app.route("/weekly_trends/<path:filename>")
 def static_trends(filename):
-    return send_from_directory(os.path.join(CURRENT_DIR, "weekly_trends"), filename)
+    return send_from_directory(os.path.join(DASH_DIR, "weekly_trends"), filename)
 
 @app.route("/model_scorecard/<path:filename>")
 def static_scorecard(filename):
-    return send_from_directory(os.path.join(CURRENT_DIR, "model_scorecard"), filename)
+    return send_from_directory(os.path.join(DASH_DIR, "model_scorecard"), filename)
 
 @app.route("/project_notes/<path:filename>")
 def static_notes(filename):
-    return send_from_directory(os.path.join(CURRENT_DIR, "project_notes"), filename)
+    return send_from_directory(os.path.join(DASH_DIR, "project_notes"), filename)
 
 # Live Machine Learning Inference API
 @app.route("/api/predict", methods=["POST"])
@@ -78,30 +78,26 @@ def predict_demand():
             # Construct input vector matching trained schema
             input_dict = {f: 0.0 for f in features}
 
-            # Map typical numerical baselines
-            base_price = price * 1.18  # estimate base price with typical margin
+            base_price = price * 1.18
             input_dict["checkout_price"] = price
             input_dict["base_price"] = base_price
             input_dict["checkout_to_base_ratio"] = price / base_price
             input_dict["homepage_featured"] = float(is_homepage)
             input_dict["emailer_for_promotion"] = float(is_emailer)
-            input_dict["op_area"] = 4.5  # average op_area
+            input_dict["op_area"] = 4.5
             input_dict["week_scaled"] = 0.95
             input_dict["week_sin"] = np.sin(2 * np.pi * 146 / 52)
             input_dict["week_cos"] = np.cos(2 * np.pi * 146 / 52)
 
-            # Center type dummy
             if "center_type_TYPE_B" in input_dict and center_id == 24:
                 input_dict["center_type_TYPE_B"] = 1.0
             elif "center_type_TYPE_C" in input_dict and center_id == 13:
                 input_dict["center_type_TYPE_C"] = 1.0
 
-            # Category dummy
             cat_col = f"category_{category}"
             if cat_col in input_dict:
                 input_dict[cat_col] = 1.0
 
-            # Typical recent demand momentum
             baseline_orders = 1100.0
             for l in [1, 2, 3, 4, 5, 6, 7, 8]:
                 col = f"orders_lag_{l}w"
@@ -116,13 +112,11 @@ def predict_demand():
             log_pred = model.predict(input_df)[0]
             pred_orders = int(np.clip(np.expm1(log_pred), 100, 20000))
         else:
-            # Calibrated econometric fallback curve
             price_effect = max(180, int((240 - price) * 6.5))
             home_boost = 320 if is_homepage else 0
             email_boost = 210 if is_emailer else 0
             pred_orders = 650 + price_effect + home_boost + email_boost
 
-        # Operational sizing
         couriers = max(5, int(round(pred_orders / 75)))
         chefs = max(2, int(round(pred_orders / 280)))
         ci_low = int(pred_orders * 0.91)
