@@ -1,4 +1,6 @@
 @echo off
-echo Starting MUJ AI Campus Navigator...
-python -m streamlit run app.py
+echo ========================================================
+echo  Starting MUJ AI Campus Navigator (Cute Web UI)...
+echo ========================================================
+python web_app.py
 pause

@@ -1,4 +1,4 @@
-﻿# 🏛️ Manipal University Jaipur (MUJ) AI Spatial Navigation System
+# 🏛️ Manipal University Jaipur (MUJ) AI Spatial Navigation System
 ### *Artificial Intelligence & Soft Computing (AISC) Heuristic Pathfinding Project*
 
 A multi-criteria campus spatial graph search engine and interactive geospatial navigation dashboard built from scratch using Python, NetworkX, Folium, and Streamlit.
@@ -54,12 +54,19 @@ $$d = 2 R \cdot \operatorname{atan2}\left(\sqrt{a}, \sqrt{1-a}\right) \quad (\te
 
 ## 🚀 How to Run the Project
 
-### 1. Run the Interactive Streamlit Web App
+### 1. Run the Modern Aesthetic Map Web App (Recommended)
 ```powershell
-streamlit run app.py
+python web_app.py
 ```
+*(Or double-click `run_app.bat` - automatically launches in your browser at `http://127.0.0.1:5000`)*
 
-### 2. Run the Benchmark Comparison CLI Suite
+### 2. Run the Legacy Streamlit Dashboard
+```powershell
+streamlit run app_streamlit.py
+```
+*(Or double-click `run_streamlit.bat`)*
+
+### 3. Run the Benchmark Comparison CLI Suite
 ```powershell
 python run_benchmarks.py
 ```
