@@ -1,13 +1,8 @@
 {
-  "functions": {
-    "api/index.py": {
-      "includeFiles": "aisc - map project/**"
-    }
-  },
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/api/index.py"
+      "destination": "/api/index"
     }
   ]
 }
