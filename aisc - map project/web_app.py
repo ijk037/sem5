@@ -6,24 +6,63 @@ Preserves the underlying AISC search engine, spatial graph, and dynamic models w
 
 import os
 import sys
+import io
 import webbrowser
 from threading import Timer
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, render_template_string, request, jsonify
 
-# Add project root to sys.path
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+# Add project root and current dir to sys.path
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
 
 from src.spatial_graph import SpatialGraph
 from src.search_engine import SearchEngine
 from src.dynamic_simulation import CampusEventSimulator
+from src.embedded_data import LOCATIONS_CSV, CONNECTIONS_CSV
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__, template_folder=os.path.join(BASE_DIR, "templates"))
-loc_path = os.path.join(BASE_DIR, "data", "locations.csv")
-conn_path = os.path.join(BASE_DIR, "data", "connections.csv")
 
+
+def get_csv_source(filename: str, fallback_data: str):
+    """Safely find and return CSV file path or in-memory fallback stream."""
+    candidates = [
+        os.path.join(BASE_DIR, "data", filename),
+        os.path.join(os.getcwd(), "data", filename),
+        os.path.join(os.getcwd(), "aisc - map project", "data", filename),
+        os.path.join(os.path.dirname(BASE_DIR), "data", filename),
+    ]
+    for p in candidates:
+        if os.path.isfile(p):
+            return p
+    # Fallback to embedded in-memory string
+    return io.StringIO(fallback_data)
+
+
+def get_template_html():
+    """Retrieve template content safely from disk or fallback."""
+    candidates = [
+        os.path.join(BASE_DIR, "templates", "index.html"),
+        os.path.join(os.getcwd(), "templates", "index.html"),
+        os.path.join(os.getcwd(), "aisc - map project", "templates", "index.html"),
+        os.path.join(os.path.dirname(BASE_DIR), "templates", "index.html"),
+    ]
+    for p in candidates:
+        if os.path.isfile(p):
+            try:
+                with open(p, "r", encoding="utf-8") as f:
+                    return f.read()
+            except Exception:
+                pass
+    return None
+
+
+# Initialize Spatial Graph & Search Engine with bulletproof fallbacks
 sg = SpatialGraph()
-sg.load_from_csv(loc_path, conn_path)
+loc_source = get_csv_source("locations.csv", LOCATIONS_CSV)
+conn_source = get_csv_source("connections.csv", CONNECTIONS_CSV)
+sg.load_from_csv(loc_source, conn_source)
+
 engine = SearchEngine(sg)
 simulator = CampusEventSimulator(sg)
 
@@ -31,7 +70,26 @@ simulator = CampusEventSimulator(sg)
 @app.route("/")
 def index():
     """Render main aesthetic map interface."""
-    return render_template("index.html")
+    try:
+        return render_template("index.html")
+    except Exception:
+        content = get_template_html()
+        if content:
+            return render_template_string(content)
+        return "<h3>🌸 MUJ Campus Navigator is starting... Please refresh.</h3>"
+
+
+@app.route("/api/health", methods=["GET"])
+def health_check():
+    """Diagnostic health check endpoint for deployment verification."""
+    return jsonify({
+        "status": "healthy",
+        "nodes_count": len(sg.graph.nodes),
+        "edges_count": len(sg.graph.edges),
+        "source_type": getattr(sg, "source_type", "unknown"),
+        "base_dir": BASE_DIR,
+        "cwd": os.getcwd()
+    })
 
 
 @app.route("/api/landmarks", methods=["GET"])
@@ -90,7 +148,6 @@ def calculate_route():
     if not start or not goal:
         return jsonify({"success": False, "error_message": "Start and Goal are required."}), 400
 
-    # Route based on chosen algorithm
     if algo == "Dijkstra":
         res = engine.dijkstra_search(start, goal, routing_mode=mode)
     elif algo == "Greedy Best-First":
@@ -100,7 +157,6 @@ def calculate_route():
     else:
         res = engine.a_star_search(start, goal, routing_mode=mode)
 
-    # Format explored nodes coordinates for footprint visualization
     explored_coords = []
     for node in res.explored_nodes:
         if node in sg.graph.nodes:
@@ -173,6 +229,5 @@ if __name__ == "__main__":
     print(f" 🌐 URL: http://127.0.0.1:{PORT}")
     print("=" * 70)
     
-    # Auto-open browser after 1 second
     Timer(1.2, open_browser, args=[PORT]).start()
     app.run(host="127.0.0.1", port=PORT, debug=False)

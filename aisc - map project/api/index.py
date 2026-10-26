@@ -1,13 +1,33 @@
 import os
 import sys
+import traceback
 
-# Ensure project root is in sys.path
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(CURRENT_DIR)
 
-from web_app import app
+# Add all relevant candidate root directories to sys.path
+for candidate in [PROJECT_ROOT, CURRENT_DIR, os.getcwd()]:
+    if candidate not in sys.path and os.path.isdir(candidate):
+        sys.path.insert(0, candidate)
 
-# Vercel Serverless Function looks for 'app'
+try:
+    from web_app import app
+except Exception as e:
+    from flask import Flask, jsonify
+    app = Flask(__name__)
+    err_tb = traceback.format_exc()
+
+    @app.route("/", defaults={"path": ""})
+    @app.route("/<path:path>")
+    def catch_all(path):
+        return jsonify({
+            "status": "initialization_failed",
+            "error_type": type(e).__name__,
+            "error_message": str(e),
+            "traceback": err_tb,
+            "sys_path": sys.path,
+            "cwd": os.getcwd()
+        }), 500
+
 if __name__ == "__main__":
     app.run()
