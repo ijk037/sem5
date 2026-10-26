@@ -1,14 +1,19 @@
-﻿"""
+"""
 Spatial Graph Representation and Data Ingestion Module (Phase 1).
 Manages campus nodes, pathways, Haversine spatial calculations,
 and OpenStreetMap / CSV data ingestion using NetworkX.
 """
 
+import csv
 import math
 import logging
 from typing import Dict, List, Tuple, Optional, Any
-import pandas as pd
 import networkx as nx
+
+try:
+    import pandas as pd
+except ImportError:
+    pd = None
 
 logger = logging.getLogger(__name__)
 
@@ -63,16 +68,32 @@ class SpatialGraph:
     def __len__(self):
         return len(self.graph)
 
-    def load_from_csv(self, locations_path: str, connections_path: str) -> None:
+    def load_from_csv(self, locations_path: Any, connections_path: Any) -> None:
         """
         Ingest campus layout from curated locations.csv and connections.csv.
+        Supports file paths, file-like objects (StringIO), or DataFrames.
         """
         self.graph.clear()
         self.source_type = "csv"
 
+        def _get_rows(source):
+            if hasattr(source, "read"):
+                # Handle StringIO or file-like object
+                content = source.read()
+                if hasattr(source, "seek"):
+                    source.seek(0)
+                return list(csv.DictReader(io.StringIO(content) if isinstance(content, str) else content))
+            elif isinstance(source, str):
+                with open(source, mode="r", encoding="utf-8") as f:
+                    return list(csv.DictReader(f))
+            elif hasattr(source, "to_dict"):
+                return source.to_dict("records")
+            else:
+                return list(source)
+
         # 1. Load Nodes (Locations)
-        df_locs = pd.read_csv(locations_path)
-        for _, row in df_locs.iterrows():
+        loc_rows = _get_rows(locations_path)
+        for row in loc_rows:
             node_id = str(row['id']).strip()
             self.graph.add_node(
                 node_id,
@@ -80,14 +101,14 @@ class SpatialGraph:
                 latitude=float(row['latitude']),
                 longitude=float(row['longitude']),
                 node_type=str(row.get('node_type', 'generic')).strip().lower(),
-                wheelchair_accessible=bool(row.get('wheelchair_accessible', True) in [True, 'True', 'true', 1, '1']),
-                indoor=bool(row.get('indoor', False) in [True, 'True', 'true', 1, '1']),
+                wheelchair_accessible=bool(str(row.get('wheelchair_accessible', 'True')).lower() in ['true', '1']),
+                indoor=bool(str(row.get('indoor', 'False')).lower() in ['true', '1']),
                 description=str(row.get('description', '')).strip()
             )
 
         # 2. Load Edges (Connections)
-        df_conns = pd.read_csv(connections_path)
-        for _, row in df_conns.iterrows():
+        conn_rows = _get_rows(connections_path)
+        for row in conn_rows:
             u = str(row['source']).strip()
             v = str(row['target']).strip()
 
@@ -100,7 +121,7 @@ class SpatialGraph:
 
             # Compute physical length if not explicitly provided or invalid
             dist_val = row.get('distance_meters')
-            if pd.isna(dist_val) or float(dist_val) <= 0:
+            if dist_val is None or dist_val == "" or (pd is not None and pd.isna(dist_val)) or float(dist_val) <= 0:
                 dist_val = haversine_distance(
                     node_u['latitude'], node_u['longitude'],
                     node_v['latitude'], node_v['longitude']
@@ -108,12 +129,12 @@ class SpatialGraph:
             else:
                 dist_val = float(dist_val)
 
-            has_stairs = bool(row.get('has_stairs', False) in [True, 'True', 'true', 1, '1'])
-            wheelchair_acc = bool(row.get('wheelchair_accessible', not has_stairs) in [True, 'True', 'true', 1, '1'])
-            is_indoor = bool(row.get('is_indoor', False) in [True, 'True', 'true', 1, '1'])
+            has_stairs = bool(str(row.get('has_stairs', 'False')).lower() in ['true', '1'])
+            wheelchair_acc = bool(str(row.get('wheelchair_accessible', not has_stairs)).lower() in ['true', '1'])
+            is_indoor = bool(str(row.get('is_indoor', 'False')).lower() in ['true', '1'])
             crowd_factor = float(row.get('crowd_factor', 1.0))
-            is_blocked = bool(row.get('is_blocked', False) in [True, 'True', 'true', 1, '1'])
-            weather_exposed = bool(row.get('weather_exposed', not is_indoor) in [True, 'True', 'true', 1, '1'])
+            is_blocked = bool(str(row.get('is_blocked', 'False')).lower() in ['true', '1'])
+            weather_exposed = bool(str(row.get('weather_exposed', not is_indoor)).lower() in ['true', '1'])
             path_name = str(row.get('path_name', f'{u} <-> {v}')).strip()
 
             self.graph.add_edge(
