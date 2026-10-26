@@ -17,10 +17,8 @@ from src.spatial_graph import SpatialGraph
 from src.search_engine import SearchEngine
 from src.dynamic_simulation import CampusEventSimulator
 
-app = Flask(__name__, template_folder="templates")
-
-# Initialize Spatial Graph & Search Engine
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+app = Flask(__name__, template_folder=os.path.join(BASE_DIR, "templates"))
 loc_path = os.path.join(BASE_DIR, "data", "locations.csv")
 conn_path = os.path.join(BASE_DIR, "data", "connections.csv")
 
