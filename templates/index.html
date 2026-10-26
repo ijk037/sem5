@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🌸 MUJ AI Campus Navigator</title>
-  
-  <!-- Google Fonts: Plus Jakarta Sans -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>🌸 MUJ Campus AI Navigator</title>
+
+  <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -21,65 +21,31 @@
         extend: {
           fontFamily: {
             sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            outfit: ['"Outfit"', 'sans-serif'],
           },
           colors: {
-            brand: {
-              50: '#f5f3ff',
-              100: '#ede9fe',
-              200: '#ddd6fe',
-              500: '#8b5cf6',
-              600: '#7c3aed',
-              700: '#6d28d9',
-            },
-            pastel: {
-              emerald: '#10b981',
-              rose: '#f43f5e',
-              amber: '#f59e0b',
-              sky: '#0284c7',
-              indigo: '#6366f1'
-            }
+            primary: '#6b38d4',
+            'primary-container': '#8455ef',
+            secondary: '#4648d4',
+            surface: '#f7f9fb',
           }
         }
       }
-    }
+    };
   </script>
 
   <style>
     * {
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
-    
-    /* Custom cute scrollbars */
     ::-webkit-scrollbar {
-      width: 5px;
-      height: 5px;
+      display: none;
     }
-    ::-webkit-scrollbar-track {
-      background: rgba(241, 245, 249, 0.5);
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 9999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
-    }
-
-    /* Soft pulse animations */
-    @keyframes cute-pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.15); opacity: 0.85; }
-    }
-    .animate-cute-pulse {
-      animation: cute-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-
-    /* Leaflet popup customization */
     .leaflet-popup-content-wrapper {
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(12px);
-      border-radius: 18px;
-      box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.12);
+      border-radius: 20px;
+      box-shadow: 0 12px 30px -5px rgba(107, 56, 212, 0.12);
       border: 1px solid rgba(255, 255, 255, 0.8);
       padding: 4px;
     }
@@ -87,227 +53,67 @@
       background: white;
     }
     .leaflet-popup-content {
-      margin: 10px 14px;
-      line-height: 1.4;
-    }
-
-    /* Route animation */
-    .animated-route {
-      stroke-dasharray: 10, 10;
-      animation: dash 30s linear infinite;
-    }
-    @keyframes dash {
-      to {
-        stroke-dashoffset: -1000;
-      }
+      margin: 8px 12px;
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased overflow-hidden select-none">
+<body class="bg-[#f7f9fb] text-slate-800 antialiased overflow-hidden select-none">
 
-  <!-- Fullscreen Map Container -->
+  <!-- Fullscreen Interactive Map -->
   <div id="map" class="absolute inset-0 w-full h-full z-0"></div>
 
-  <!-- Cute Floating Navigation Card (Top Left) -->
-  <div class="absolute top-4 left-4 z-10 w-96 max-w-[calc(100vw-2rem)] max-h-[calc(100vh-2rem)] flex flex-col pointer-events-auto">
-    <div class="backdrop-blur-xl bg-white/90 border border-white/80 shadow-[0_20px_50px_rgba(30,27,75,0.08)] rounded-3xl p-5 flex flex-col overflow-hidden transition-all duration-300">
-      
-      <!-- Card Header -->
-      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-        <div class="flex items-center gap-2.5">
-          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-violet-500 to-fuchsia-400 flex items-center justify-center text-white text-lg shadow-md shadow-violet-200">
-            🌸
-          </div>
-          <div>
-            <h1 class="font-extrabold text-base tracking-tight text-slate-800 flex items-center gap-1.5">
-              MUJ Campus Nav
-            </h1>
-            <p class="text-[11px] font-semibold text-violet-600 uppercase tracking-wider">AISC Heuristic Pathfinder</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-1">
-          <button id="btn-compare-modal" title="Compare Search Algorithms" class="p-2 text-slate-400 hover:text-violet-600 hover:bg-violet-50 rounded-xl transition-colors">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- Controls & Scrollable Content -->
-      <div class="overflow-y-auto space-y-4 pt-4 pr-1 max-h-[calc(100vh-14rem)]">
-        
-        <!-- Start & Destination Selection -->
-        <div class="relative space-y-2 bg-slate-50/80 p-3 rounded-2xl border border-slate-100">
-          
-          <!-- Start Select -->
-          <div>
-            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-sm shadow-emerald-300"></span>
-              Start Location
-            </label>
-            <select id="start-select" class="w-full bg-white text-xs font-semibold text-slate-700 py-2.5 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition-all cursor-pointer">
-              <option value="">Select starting landmark...</option>
-            </select>
-          </div>
-
-          <!-- Swap Button in between -->
-          <div class="flex justify-end pr-3 -my-2.5 relative z-10">
-            <button id="btn-swap" title="Swap Start and Destination" class="w-7 h-7 rounded-full bg-white border border-slate-200 shadow-sm hover:shadow hover:border-violet-300 hover:text-violet-600 flex items-center justify-center text-slate-400 text-xs transition-all active:scale-90">
-              ⇅
-            </button>
-          </div>
-
-          <!-- Goal Select -->
-          <div>
-            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-              <span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block shadow-sm shadow-rose-300"></span>
-              Destination
-            </label>
-            <select id="goal-select" class="w-full bg-white text-xs font-semibold text-slate-700 py-2.5 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-400 transition-all cursor-pointer">
-              <option value="">Select destination...</option>
-            </select>
-          </div>
-
-        </div>
-
-        <!-- Mode Pills -->
-        <div>
-          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Routing Mode</label>
-          <div class="grid grid-cols-2 gap-1.5">
-            <button data-mode="shortest" class="mode-pill flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-bold transition-all border bg-violet-600 text-white border-violet-600 shadow-sm shadow-violet-200">
-              🏃 <span>Shortest</span>
-            </button>
-            <button data-mode="quickest" class="mode-pill flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-bold transition-all border bg-white text-slate-600 border-slate-200 hover:bg-slate-50">
-              ⚡ <span>Quickest</span>
-            </button>
-            <button data-mode="accessible" class="mode-pill flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-bold transition-all border bg-white text-slate-600 border-slate-200 hover:bg-slate-50">
-              ♿ <span>Accessible</span>
-            </button>
-            <button data-mode="sheltered" class="mode-pill flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-bold transition-all border bg-white text-slate-600 border-slate-200 hover:bg-slate-50">
-              ☔ <span>Sheltered</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Algorithm & Footprint Toggles -->
-        <div class="flex items-center justify-between text-xs pt-1">
-          <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
-            <button data-algo="A*" class="algo-pill px-2.5 py-1 rounded-lg font-bold text-[11px] bg-white text-violet-700 shadow-sm">A*</button>
-            <button data-algo="Dijkstra" class="algo-pill px-2.5 py-1 rounded-lg font-bold text-[11px] text-slate-500 hover:text-slate-800">Dijkstra</button>
-            <button data-algo="Greedy Best-First" class="algo-pill px-2.5 py-1 rounded-lg font-bold text-[11px] text-slate-500 hover:text-slate-800">Greedy</button>
-            <button data-algo="BFS" class="algo-pill px-2.5 py-1 rounded-lg font-bold text-[11px] text-slate-500 hover:text-slate-800">BFS</button>
-          </div>
-          <label class="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 cursor-pointer hover:text-slate-700">
-            <input type="checkbox" id="check-footprint" checked class="w-3.5 h-3.5 rounded text-violet-600 focus:ring-violet-400 accent-violet-600 cursor-pointer">
-            <span>Footprint</span>
-          </label>
-        </div>
-
-        <!-- Find Route Button -->
-        <button id="btn-route" class="w-full bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 active:scale-[0.98] text-white py-3 px-4 rounded-2xl font-extrabold text-xs shadow-lg shadow-violet-200 hover:shadow-violet-300 transition-all flex items-center justify-center gap-2 tracking-wide cursor-pointer">
-          <span>Find Route</span>
-          <span class="text-sm">✨</span>
-        </button>
-
-        <!-- Route Result Card (Hidden until routed) -->
-        <div id="result-box" class="hidden space-y-3 pt-1 border-t border-slate-100 transition-all">
-          <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Route Overview</span>
-            <span id="res-badge" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-700">Optimal Path</span>
-          </div>
-
-          <!-- Cute Stats Grid -->
-          <div class="grid grid-cols-3 gap-2">
-            <div class="bg-violet-50/80 border border-violet-100 p-2 rounded-2xl text-center">
-              <span class="block text-slate-400 text-[10px] font-bold">WALK TIME</span>
-              <span id="res-time" class="font-extrabold text-sm text-violet-700">--</span>
-            </div>
-            <div class="bg-indigo-50/80 border border-indigo-100 p-2 rounded-2xl text-center">
-              <span class="block text-slate-400 text-[10px] font-bold">DISTANCE</span>
-              <span id="res-dist" class="font-extrabold text-sm text-indigo-700">--</span>
-            </div>
-            <div class="bg-fuchsia-50/80 border border-fuchsia-100 p-2 rounded-2xl text-center">
-              <span class="block text-slate-400 text-[10px] font-bold">EXPANDED</span>
-              <span id="res-nodes" class="font-extrabold text-sm text-fuchsia-700">--</span>
-            </div>
-          </div>
-
-          <!-- Dynamic Mode Highlights -->
-          <div id="mode-highlight" class="text-[11px] font-medium px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 flex items-center gap-2">
-            ℹ️ <span id="mode-highlight-text">Direct campus walkway route.</span>
-          </div>
-
-          <!-- Step by Step Breadcrumbs -->
-          <div class="space-y-1.5">
-            <button id="toggle-steps" class="w-full flex items-center justify-between text-[11px] font-bold text-slate-500 hover:text-slate-800 py-1">
-              <span>Path Itinerary (<span id="res-hop-count">0</span> stops)</span>
-              <span id="toggle-arrow" class="text-xs">▾</span>
-            </button>
-            <div id="steps-container" class="space-y-1 max-h-36 overflow-y-auto text-xs text-slate-600 pl-1">
-              <!-- Dynamically populated -->
-            </div>
-          </div>
-        </div>
-
-        <!-- Campus Event Simulation Toggle -->
-        <div class="pt-2 border-t border-slate-100">
-          <details class="group">
-            <summary class="flex items-center justify-between text-[11px] font-bold text-slate-400 hover:text-slate-600 cursor-pointer list-none">
-              <span>🌦️ LIVE CAMPUS CONDITIONS</span>
-              <span class="transition group-open:rotate-180 text-xs">▾</span>
-            </summary>
-            <div class="space-y-1.5 pt-2">
-              <select id="sim-event-select" class="w-full bg-white text-[11px] font-semibold text-slate-700 py-1.5 px-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-1 focus:ring-violet-400">
-                <option value="none">Normal Campus Traffic</option>
-                <option value="rush">Peak Hour Lunch Rush (Crowded)</option>
-                <option value="rain">Monsoon Downpour (Rain Exposed Penalty)</option>
-                <option value="blockage">AB-1 Pathway Construction Blockage</option>
-              </select>
-              <p class="text-[10px] text-slate-400 leading-tight">Simulates dynamic dynamic re-routing around congested or obstructed walkways in real time.</p>
-            </div>
-          </details>
-        </div>
-
-      </div>
-
-      <!-- Card Footer Tip -->
-      <div class="pt-3 border-t border-slate-100 mt-2 text-center">
-        <p class="text-[10px] text-slate-400 font-medium">💡 Click any landmark on the map to set Start or Goal</p>
-      </div>
-
+  <!-- ELEMENT 1: Stitch Compact Floating Search Pill Centered at Top -->
+  <div class="absolute top-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto flex items-center gap-2 px-3 py-2 rounded-full bg-white/90 backdrop-blur-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-white/80 transition-all hover:shadow-[0_12px_36px_rgb(0,0,0,0.08)] max-w-[92vw]">
+    
+    <!-- Logo / Brand Sparkle Icon -->
+    <div class="w-8 h-8 rounded-full bg-purple-100/80 flex items-center justify-center text-purple-700 text-sm shadow-inner shrink-0">
+      🌸
     </div>
+
+    <!-- Start Origin Selector -->
+    <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100/70 hover:bg-slate-100 transition-colors cursor-pointer">
+      <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)] shrink-0"></span>
+      <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider shrink-0 font-outfit">From</span>
+      <select id="start-select" class="bg-transparent text-xs font-semibold text-slate-800 outline-none cursor-pointer pr-1 max-w-[140px] truncate">
+        <option value="">Start location...</option>
+      </select>
+    </div>
+
+    <!-- Soft Arrow Divider -->
+    <span class="text-slate-300 text-xs font-bold select-none px-0.5">➔</span>
+
+    <!-- Destination Goal Selector -->
+    <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100/70 hover:bg-slate-100 transition-colors cursor-pointer">
+      <span class="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.6)] shrink-0"></span>
+      <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider shrink-0 font-outfit">To</span>
+      <select id="dest-select" class="bg-transparent text-xs font-semibold text-slate-800 outline-none cursor-pointer pr-1 max-w-[140px] truncate">
+        <option value="">Destination...</option>
+      </select>
+    </div>
+
+    <!-- Cute Gradient Pill Action Button -->
+    <button id="btn-route" class="px-4 py-2 rounded-full bg-gradient-to-r from-purple-600 via-[#8455ef] to-indigo-600 hover:opacity-95 text-white text-xs font-semibold shadow-md shadow-purple-200 flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer shrink-0">
+      <span>Find Path</span>
+      <span class="text-xs">✨</span>
+    </button>
   </div>
 
-  <!-- Comparison Modal (Pop up when clicking chart icon) -->
-  <div id="compare-modal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-100 transform transition-all space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-        <div>
-          <h2 class="font-extrabold text-lg text-slate-800">Heuristic Search Comparison</h2>
-          <p class="text-xs text-slate-400">Real-time benchmark for current route selection</p>
-        </div>
-        <button id="close-modal" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-sm font-bold">✕</button>
+  <!-- ELEMENT 2: Stitch Simple Cute Floating Result Badge Centered at Bottom -->
+  <div id="result-badge" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 pointer-events-auto hidden transition-all">
+    <div class="px-5 py-2.5 rounded-full bg-white/90 backdrop-blur-xl shadow-[0_8px_25px_rgba(0,0,0,0.06)] border border-white/80 flex items-center gap-3 text-slate-700 text-xs font-medium transition-all hover:scale-105 select-none">
+      <div class="flex items-center gap-1.5">
+        <span class="text-sm">🚶</span>
+        <span class="font-bold text-slate-900" id="stat-time">-- min</span>
+        <span class="text-slate-400">walk</span>
       </div>
-
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="border-b border-slate-200 text-slate-400 uppercase text-[10px] font-extrabold tracking-wider">
-              <th class="py-2 px-3">Algorithm</th>
-              <th class="py-2 px-3">Distance</th>
-              <th class="py-2 px-3">Expansions</th>
-              <th class="py-2 px-3">Generated</th>
-              <th class="py-2 px-3">Time</th>
-              <th class="py-2 px-3">Status</th>
-            </tr>
-          </thead>
-          <tbody id="compare-table-body" class="divide-y divide-slate-100 font-semibold text-slate-700">
-            <!-- Dynamically populated -->
-          </tbody>
-        </table>
+      <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+      <div class="flex items-center gap-1.5">
+        <span class="text-sm">📏</span>
+        <span class="font-bold text-slate-900" id="stat-distance">-- m</span>
       </div>
-
-      <div class="bg-violet-50 p-3 rounded-2xl text-[11px] text-violet-800 leading-relaxed">
-        <strong>AISC Analysis:</strong> Notice how <strong>A*</strong> prunes irrelevant search space using the admissible Haversine heuristic $h(n)$, drastically minimizing node expansions compared to unguided Dijkstra and BFS while retaining mathematical optimality.
+      <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+      <div class="flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full text-[11px] font-semibold">
+        <span>🌿 Step-free</span>
       </div>
     </div>
   </div>
@@ -316,52 +122,43 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    // State management
     let map;
     let landmarksData = [];
-    let connectionsData = [];
     let landmarkMarkers = {};
     let activeRouteLayer = null;
     let activeGlowLayer = null;
-    let footprintLayer = null;
     let startMarker = null;
     let goalMarker = null;
 
-    let currentMode = 'shortest';
-    let currentAlgo = 'A*';
-
-    // Initialize Map with CartoDB Voyager tiles (cute pastel aesthetics)
+    // Initialize Map with soft pastel CartoDB Voyager tiles
     function initMap() {
-      // Centered on MUJ Campus
       map = L.map('map', {
         center: [26.8439, 75.5650],
         zoom: 17,
         zoomControl: false
       });
 
-      // CartoDB Voyager Tile Layer
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; MUJ Spatial',
+        attribution: '&copy; CartoDB &copy; MUJ',
         maxZoom: 20,
         subdomains: 'abcd'
       }).addTo(map);
 
-      // Cute zoom control in bottom right
       L.control.zoom({ position: 'bottomright' }).addTo(map);
     }
 
-    // Cute Color palette for Landmark Categories
+    // Category pin colors
     const categoryColors = {
-      academic: { bg: '#8b5cf6', border: '#7c3aed', icon: '🏛️' },
-      dining: { bg: '#f97316', border: '#ea580c', icon: '🍔' },
-      hostel: { bg: '#0284c7', border: '#0369a1', icon: '🛏️' },
-      sports: { bg: '#10b981', border: '#059669', icon: '⚽' },
-      gate: { bg: '#64748b', border: '#475569', icon: '🚪' },
-      facility: { bg: '#ec4899', border: '#db2777', icon: '✨' },
-      junction: { bg: '#94a3b8', border: '#64748b', icon: '🔄' }
+      academic: '#8b5cf6',
+      dining: '#f97316',
+      hostel: '#0284c7',
+      sports: '#10b981',
+      gate: '#64748b',
+      facility: '#ec4899',
+      junction: '#94a3b8'
     };
 
-    // Load Landmark Data & Render
+    // Load Landmark Data from live backend
     async function loadData() {
       try {
         const [lmRes, connRes] = await Promise.all([
@@ -369,7 +166,7 @@
           fetch('/api/connections')
         ]);
         landmarksData = await lmRes.json();
-        connectionsData = await connRes.json();
+        const connectionsData = await connRes.json();
 
         populateSelects(landmarksData);
         renderCampusWalkways(connectionsData);
@@ -377,9 +174,8 @@
 
         // Pre-select defaults
         document.getElementById('start-select').value = 'GATE_1';
-        document.getElementById('goal-select').value = 'LIBRARY_CENTRAL';
+        document.getElementById('dest-select').value = 'LIBRARY_CENTRAL';
         
-        // Trigger initial route
         findRoute();
       } catch (err) {
         console.error('Failed to load map data:', err);
@@ -389,78 +185,61 @@
     // Populate Dropdown Menus
     function populateSelects(landmarks) {
       const startSelect = document.getElementById('start-select');
-      const goalSelect = document.getElementById('goal-select');
-
+      const destSelect = document.getElementById('dest-select');
       const sorted = [...landmarks].sort((a, b) => a.name.localeCompare(b.name));
 
       sorted.forEach(lm => {
-        const cat = categoryColors[lm.node_type] || categoryColors.facility;
-        const opt1 = new Option(`${cat.icon} ${lm.name}`, lm.id);
-        const opt2 = new Option(`${cat.icon} ${lm.name}`, lm.id);
-        startSelect.add(opt1);
-        goalSelect.add(opt2);
+        startSelect.add(new Option(lm.name, lm.id));
+        destSelect.add(new Option(lm.name, lm.id));
       });
     }
 
-    // Render subtle pastel campus walkway network
+    // Render subtle pastel campus walkway lines
     function renderCampusWalkways(connections) {
       connections.forEach(conn => {
-        const coords = [
+        L.polyline([
           [conn.source_coords.lat, conn.source_coords.lon],
           [conn.target_coords.lat, conn.target_coords.lon]
-        ];
-        L.polyline(coords, {
+        ], {
           color: '#cbd5e1',
-          weight: 2.5,
-          opacity: 0.6,
+          weight: 2,
+          opacity: 0.5,
           dashArray: '4, 6',
           interactive: false
         }).addTo(map);
       });
     }
 
-    // Render cute landmark pins on the map
+    // Render cute landmark pins on map
     function renderLandmarks(landmarks) {
       landmarks.forEach(lm => {
-        const cat = categoryColors[lm.node_type] || categoryColors.facility;
+        const color = categoryColors[lm.node_type] || '#8b5cf6';
         
-        // Custom HTML Marker
         const markerHtml = `
           <div class="group relative flex items-center justify-center cursor-pointer transition-transform duration-200 hover:scale-125">
-            <div style="background-color: ${cat.bg};" class="w-6 h-6 rounded-full border-2 border-white shadow-md flex items-center justify-center text-[10px]">
-              <span class="leading-none">${cat.icon}</span>
-            </div>
+            <div style="background-color: ${color};" class="w-4 h-4 rounded-full border-2 border-white shadow-sm"></div>
           </div>
         `;
 
         const icon = L.divIcon({
           html: markerHtml,
           className: 'custom-pin',
-          iconSize: [24, 24],
-          iconAnchor: [12, 12]
+          iconSize: [16, 16],
+          iconAnchor: [8, 8]
         });
 
         const marker = L.marker([lm.latitude, lm.longitude], { icon }).addTo(map);
         landmarkMarkers[lm.id] = marker;
 
-        // Cute Popup with Action Buttons
         const popupContent = `
-          <div class="text-slate-800 min-w-[180px]">
-            <div class="flex items-center gap-1.5 mb-1">
-              <span class="text-base">${cat.icon}</span>
-              <h4 class="font-bold text-xs leading-tight">${lm.name}</h4>
-            </div>
-            <div class="flex gap-1 mb-2">
-              <span class="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase bg-slate-100 text-slate-500">${lm.node_type}</span>
-              ${lm.wheelchair_accessible ? '<span class="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase bg-emerald-100 text-emerald-700">♿ Accessible</span>' : ''}
-              ${lm.indoor ? '<span class="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase bg-sky-100 text-sky-700">Indoor</span>' : ''}
-            </div>
-            <div class="grid grid-cols-2 gap-1.5 pt-1 border-t border-slate-100">
-              <button onclick="setAsPoint('${lm.id}', 'start')" class="py-1 px-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-[10px] transition-all">
-                🟢 Set Start
+          <div class="text-slate-800 text-center min-w-[150px]">
+            <h4 class="font-bold text-xs mb-2 text-slate-800">${lm.name}</h4>
+            <div class="flex justify-center gap-1.5">
+              <button onclick="setAsPoint('${lm.id}', 'start')" class="py-1 px-2.5 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-[10px] transition-all">
+                🟢 Set From
               </button>
-              <button onclick="setAsPoint('${lm.id}', 'goal')" class="py-1 px-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-[10px] transition-all">
-                🚩 Set Goal
+              <button onclick="setAsPoint('${lm.id}', 'dest')" class="py-1 px-2.5 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-[10px] transition-all">
+                🚩 Set To
               </button>
             </div>
           </div>
@@ -470,43 +249,34 @@
       });
     }
 
-    // Set point helper from popup
+    // Set points from map clicks
     window.setAsPoint = function(nodeId, type) {
       if (type === 'start') {
         document.getElementById('start-select').value = nodeId;
       } else {
-        document.getElementById('goal-select').value = nodeId;
+        document.getElementById('dest-select').value = nodeId;
       }
       map.closePopup();
       findRoute();
     };
 
-    // Calculate Route
+    // Calculate Route via A* Engine
     async function findRoute() {
       const start = document.getElementById('start-select').value;
-      const goal = document.getElementById('goal-select').value;
-      const showFootprint = document.getElementById('check-footprint').checked;
-
+      const goal = document.getElementById('dest-select').value;
       if (!start || !goal) return;
 
       try {
         const res = await fetch('/api/route', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            start,
-            goal,
-            mode: currentMode,
-            algorithm: currentAlgo
-          })
+          body: JSON.stringify({ start, goal, mode: 'shortest', algorithm: 'A*' })
         });
 
         const data = await res.json();
         if (data.success) {
-          renderRoute(data, showFootprint);
-          displayResultBox(data);
-        } else {
-          alert('No viable route found under current constraints (e.g., stairs blocking accessible route).');
+          renderRoute(data);
+          displayResult(data);
         }
       } catch (err) {
         console.error('Routing failed:', err);
@@ -514,256 +284,91 @@
     }
 
     // Draw Route on Map
-    function renderRoute(routeData, showFootprint) {
-      // Clear previous layers
+    function renderRoute(routeData) {
       if (activeRouteLayer) map.removeLayer(activeRouteLayer);
       if (activeGlowLayer) map.removeLayer(activeGlowLayer);
-      if (footprintLayer) map.removeLayer(footprintLayer);
       if (startMarker) map.removeLayer(startMarker);
       if (goalMarker) map.removeLayer(goalMarker);
 
       const latlngs = routeData.path_coords;
 
-      // Draw explored footprint (A* search frontier)
-      if (showFootprint && routeData.explored_coords && routeData.explored_coords.length > 0) {
-        footprintLayer = L.layerGroup();
-        routeData.explored_coords.forEach(coord => {
-          L.circleMarker(coord, {
-            radius: 5,
-            fillColor: '#f59e0b',
-            color: '#ffffff',
-            weight: 1.5,
-            fillOpacity: 0.6,
-            interactive: false
-          }).addTo(footprintLayer);
-        });
-        footprintLayer.addTo(map);
-      }
-
       // Outer Glow Polyline
       activeGlowLayer = L.polyline(latlngs, {
-        color: '#c084fc',
+        color: '#f472b6',
         weight: 10,
-        opacity: 0.45,
+        opacity: 0.35,
         lineCap: 'round',
         lineJoin: 'round'
       }).addTo(map);
 
       // Primary Vibrant Route Polyline
       activeRouteLayer = L.polyline(latlngs, {
-        color: '#7c3aed',
-        weight: 5,
+        color: '#8b5cf6',
+        weight: 4.5,
         opacity: 0.95,
         lineCap: 'round',
         lineJoin: 'round'
       }).addTo(map);
 
-      // Cute Start Pin (Glowing Green)
-      const startCoord = latlngs[0];
+      // Start Pin
       const startIcon = L.divIcon({
         html: `
           <div class="relative flex items-center justify-center">
-            <span class="animate-ping absolute inline-flex h-7 w-7 rounded-full bg-emerald-400 opacity-75"></span>
-            <div class="relative w-8 h-8 rounded-full bg-emerald-500 border-2 border-white shadow-lg flex items-center justify-center text-white text-xs font-bold">
+            <span class="animate-ping absolute inline-flex h-6 w-6 rounded-full bg-emerald-400 opacity-75"></span>
+            <div class="relative w-6 h-6 rounded-full bg-emerald-500 border-2 border-white shadow-md flex items-center justify-center text-white text-[10px]">
               🟢
             </div>
           </div>
         `,
         className: 'route-start-pin',
-        iconSize: [32, 32],
-        iconAnchor: [16, 16]
+        iconSize: [24, 24],
+        iconAnchor: [12, 12]
       });
-      startMarker = L.marker(startCoord, { icon: startIcon }).addTo(map);
+      startMarker = L.marker(latlngs[0], { icon: startIcon }).addTo(map);
 
-      // Cute Goal Pin (Pulsing Rose)
-      const goalCoord = latlngs[latlngs.length - 1];
+      // Goal Pin
       const goalIcon = L.divIcon({
         html: `
           <div class="relative flex items-center justify-center">
-            <span class="animate-ping absolute inline-flex h-8 w-8 rounded-full bg-rose-400 opacity-75"></span>
-            <div class="relative w-8 h-8 rounded-full bg-rose-500 border-2 border-white shadow-lg flex items-center justify-center text-white text-xs font-bold">
-              🏁
+            <span class="animate-ping absolute inline-flex h-6 w-6 rounded-full bg-rose-400 opacity-75"></span>
+            <div class="relative w-6 h-6 rounded-full bg-rose-500 border-2 border-white shadow-md flex items-center justify-center text-white text-[10px]">
+              🚩
             </div>
           </div>
         `,
         className: 'route-goal-pin',
-        iconSize: [32, 32],
-        iconAnchor: [16, 16]
+        iconSize: [24, 24],
+        iconAnchor: [12, 12]
       });
-      goalMarker = L.marker(goalCoord, { icon: goalIcon }).addTo(map);
+      goalMarker = L.marker(latlngs[latlngs.length - 1], { icon: goalIcon }).addTo(map);
 
-      // Smoothly zoom & pan to encompass the route
       map.fitBounds(activeGlowLayer.getBounds(), {
-        paddingTopLeft: [380, 50],
-        paddingBottomRight: [50, 50],
+        paddingTopLeft: [100, 50],
+        paddingBottomRight: [50, 100],
         maxZoom: 18,
         animate: true,
         duration: 0.8
       });
     }
 
-    // Display Results in Floating Card
-    function displayResultBox(data) {
-      const box = document.getElementById('result-box');
-      box.classList.remove('hidden');
+    // Display Stitch Result Badge
+    function displayResult(data) {
+      const badge = document.getElementById('result-badge');
+      badge.classList.remove('hidden');
 
       const minutes = Math.max(1, Math.round(data.time_seconds / 60));
-      document.getElementById('res-time').textContent = `${minutes} min`;
-      document.getElementById('res-dist').textContent = `${Math.round(data.distance_meters)} m`;
-      document.getElementById('res-nodes').textContent = `${data.expansions} pts`;
-      document.getElementById('res-hop-count').textContent = data.path_names.length;
-
-      // Mode explanation
-      const highlightMap = {
-        shortest: "🏃 Shortest absolute physical path across campus walkways.",
-        quickest: "⚡ Crowd-optimized route prioritizing uncongested corridors.",
-        accessible: "♿ 100% Step-free path guaranteed for wheelchairs & mobility assistance.",
-        sheltered: "☔ Indoor covered corridor routing protecting from sun/monsoon."
-      };
-      document.getElementById('mode-highlight-text').textContent = highlightMap[currentMode] || "";
-
-      // Populate Steps
-      const stepsContainer = document.getElementById('steps-container');
-      stepsContainer.innerHTML = '';
-      data.path_names.forEach((name, idx) => {
-        const isStart = idx === 0;
-        const isEnd = idx === data.path_names.length - 1;
-        const dotColor = isStart ? 'bg-emerald-500' : (isEnd ? 'bg-rose-500' : 'bg-violet-400');
-
-        const stepDiv = document.createElement('div');
-        stepDiv.className = 'flex items-center gap-2 py-0.5';
-        stepDiv.innerHTML = `
-          <span class="w-2 h-2 rounded-full ${dotColor} flex-shrink-0"></span>
-          <span class="truncate font-medium">${idx + 1}. ${name}</span>
-        `;
-        stepsContainer.appendChild(stepDiv);
-      });
+      document.getElementById('stat-time').textContent = `${minutes} min`;
+      document.getElementById('stat-distance').textContent = `${Math.round(data.distance_meters)} m`;
     }
 
-    // Event Listeners
+    // Initialize on page load
     document.addEventListener('DOMContentLoaded', () => {
       initMap();
       loadData();
 
-      // Find route button
       document.getElementById('btn-route').addEventListener('click', findRoute);
-
-      // Auto update on select changes
       document.getElementById('start-select').addEventListener('change', findRoute);
-      document.getElementById('goal-select').addEventListener('change', findRoute);
-      document.getElementById('check-footprint').addEventListener('change', findRoute);
-
-      // Swap button
-      document.getElementById('btn-swap').addEventListener('click', () => {
-        const s = document.getElementById('start-select');
-        const g = document.getElementById('goal-select');
-        const temp = s.value;
-        s.value = g.value;
-        g.value = temp;
-        findRoute();
-      });
-
-      // Mode pill selection
-      document.querySelectorAll('.mode-pill').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          document.querySelectorAll('.mode-pill').forEach(b => {
-            b.className = 'mode-pill flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-bold transition-all border bg-white text-slate-600 border-slate-200 hover:bg-slate-50';
-          });
-          const target = e.currentTarget;
-          target.className = 'mode-pill flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-bold transition-all border bg-violet-600 text-white border-violet-600 shadow-sm shadow-violet-200';
-          currentMode = target.dataset.mode;
-          findRoute();
-        });
-      });
-
-      // Algorithm pill selection
-      document.querySelectorAll('.algo-pill').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          document.querySelectorAll('.algo-pill').forEach(b => {
-            b.className = 'algo-pill px-2.5 py-1 rounded-lg font-bold text-[11px] text-slate-500 hover:text-slate-800';
-          });
-          const target = e.currentTarget;
-          target.className = 'algo-pill px-2.5 py-1 rounded-lg font-bold text-[11px] bg-white text-violet-700 shadow-sm';
-          currentAlgo = target.dataset.algo;
-          findRoute();
-        });
-      });
-
-      // Toggle steps dropdown
-      document.getElementById('toggle-steps').addEventListener('click', () => {
-        const steps = document.getElementById('steps-container');
-        const arrow = document.getElementById('toggle-arrow');
-        if (steps.classList.contains('hidden')) {
-          steps.classList.remove('hidden');
-          arrow.textContent = '▾';
-        } else {
-          steps.classList.add('hidden');
-          arrow.textContent = '▸';
-        }
-      });
-
-      // Dynamic Simulation Event
-      document.getElementById('sim-event-select').addEventListener('change', async (e) => {
-        const eventType = e.target.value;
-        await fetch('/api/simulation', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ event: eventType })
-        });
-        findRoute();
-      });
-
-      // Comparison Modal
-      const modal = document.getElementById('compare-modal');
-      document.getElementById('btn-compare-modal').addEventListener('click', async () => {
-        const start = document.getElementById('start-select').value;
-        const goal = document.getElementById('goal-select').value;
-        if (!start || !goal) return;
-
-        const res = await fetch('/api/compare', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ start, goal, mode: currentMode })
-        });
-        const compData = await res.json();
-        
-        const tbody = document.getElementById('compare-table-body');
-        tbody.innerHTML = '';
-        
-        const algos = ['A*', 'Dijkstra', 'Greedy Best-First', 'BFS'];
-        algos.forEach(algo => {
-          const item = compData[algo];
-          if (!item) return;
-          const tr = document.createElement('tr');
-          const isAStar = algo === 'A*';
-          tr.className = isAStar ? 'bg-violet-50/70 text-violet-900 font-bold' : '';
-          tr.innerHTML = `
-            <td class="py-2.5 px-3 flex items-center gap-1.5">
-              ${isAStar ? '⭐' : ''} ${algo}
-            </td>
-            <td class="py-2.5 px-3">${Math.round(item['Total Distance (m)'])} m</td>
-            <td class="py-2.5 px-3 ${isAStar ? 'text-violet-700 font-extrabold' : ''}">${item['Node Expansions']}</td>
-            <td class="py-2.5 px-3">${item['Nodes Generated']}</td>
-            <td class="py-2.5 px-3">${item['Execution Time (ms)']} ms</td>
-            <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] ${item.Success ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${item.Success ? 'Found' : 'Failed'}</span></td>
-          `;
-          tbody.appendChild(tr);
-        });
-
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-      });
-
-      document.getElementById('close-modal').addEventListener('click', () => {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-      });
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-          modal.classList.add('hidden');
-          modal.classList.remove('flex');
-        }
-      });
+      document.getElementById('dest-select').addEventListener('change', findRoute);
     });
   </script>
 </body>
