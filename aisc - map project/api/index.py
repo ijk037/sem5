@@ -7,45 +7,46 @@ import os
 import sys
 import io
 import json
+import traceback
 from flask import Flask, render_template, render_template_string, request, jsonify
 
-# Add current directory and project roots to sys.path
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if BASE_DIR not in sys.path:
-    sys.path.insert(0, BASE_DIR)
+app = Flask(__name__)
 
-# Also check for subfolder if running from repo root
-SUBFOLDER = os.path.join(BASE_DIR, "aisc - map project")
-if os.path.isdir(SUBFOLDER) and SUBFOLDER not in sys.path:
-    sys.path.insert(0, SUBFOLDER)
+# Track startup state
+init_error = None
+init_tb = None
+sg = None
+engine = None
+simulator = None
 
-from src.spatial_graph import SpatialGraph
-from src.search_engine import SearchEngine
-from src.dynamic_simulation import CampusEventSimulator
-from src.embedded_data import LOCATIONS_CSV, CONNECTIONS_CSV
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(CURRENT_DIR)
 
-app = Flask(__name__, template_folder=os.path.join(BASE_DIR, "templates"))
+for path in [CURRENT_DIR, BASE_DIR, os.path.join(BASE_DIR, "aisc - map project"), os.getcwd(), os.path.join(os.getcwd(), "aisc - map project")]:
+    if path not in sys.path and os.path.isdir(path):
+        sys.path.insert(0, path)
+
+try:
+    from src.spatial_graph import SpatialGraph
+    from src.search_engine import SearchEngine
+    from src.dynamic_simulation import CampusEventSimulator
+    from src.embedded_data import LOCATIONS_CSV, CONNECTIONS_CSV
+
+    sg = SpatialGraph()
+    sg.load_from_csv(io.StringIO(LOCATIONS_CSV), io.StringIO(CONNECTIONS_CSV))
+    engine = SearchEngine(sg)
+    simulator = CampusEventSimulator(sg)
+except Exception as e:
+    init_error = str(e)
+    init_tb = traceback.format_exc()
+    print("STARTUP ERROR:", init_tb)
 
 
-def get_csv_source(filename: str, fallback_data: str):
-    """Return file path if available on disk, or in-memory fallback stream."""
-    candidates = [
-        os.path.join(BASE_DIR, "data", filename),
-        os.path.join(SUBFOLDER, "data", filename),
-        os.path.join(os.getcwd(), "data", filename),
-        os.path.join(os.getcwd(), "aisc - map project", "data", filename),
-    ]
-    for p in candidates:
-        if os.path.isfile(p):
-            return p
-    return io.StringIO(fallback_data)
-
-
-def get_template_html():
+def get_html_content():
     """Retrieve template HTML safely from disk or fallback."""
     candidates = [
         os.path.join(BASE_DIR, "templates", "index.html"),
-        os.path.join(SUBFOLDER, "templates", "index.html"),
+        os.path.join(BASE_DIR, "aisc - map project", "templates", "index.html"),
         os.path.join(os.getcwd(), "templates", "index.html"),
         os.path.join(os.getcwd(), "aisc - map project", "templates", "index.html"),
     ]
@@ -59,31 +60,36 @@ def get_template_html():
     return None
 
 
-# Initialize Spatial Graph & Search Engine
-sg = SpatialGraph()
-loc_source = get_csv_source("locations.csv", LOCATIONS_CSV)
-conn_source = get_csv_source("connections.csv", CONNECTIONS_CSV)
-sg.load_from_csv(loc_source, conn_source)
-
-engine = SearchEngine(sg)
-simulator = CampusEventSimulator(sg)
-
-
 @app.route("/")
 def index():
     """Render main aesthetic map interface."""
-    try:
-        return render_template("index.html")
-    except Exception:
-        content = get_template_html()
-        if content:
-            return render_template_string(content)
-        return "<h3>🌸 MUJ Campus Navigator is loading... Please refresh.</h3>"
+    if init_error:
+        return f"""
+        <div style="font-family: system-ui, sans-serif; padding: 30px; background: #fff1f2; color: #9f1239; border-radius: 12px; margin: 40px auto; max-width: 800px; border: 1px solid #fecdd3; line-height: 1.6;">
+            <h2 style="margin-top: 0;">⚠️ Application Startup Error</h2>
+            <p><strong>Error:</strong> {init_error}</p>
+            <pre style="background: white; padding: 15px; border-radius: 8px; overflow-x: auto; color: #334155; font-size: 13px;">{init_tb}</pre>
+            <p style="font-size: 12px; color: #64748b;"><strong>sys.path:</strong> {sys.path}<br><strong>cwd:</strong> {os.getcwd()}</p>
+        </div>
+        """, 500
+
+    html = get_html_content()
+    if html:
+        return render_template_string(html)
+    return "<h3>🌸 MUJ Campus Navigator is loading... Please refresh.</h3>"
 
 
 @app.route("/api/health", methods=["GET"])
 def health_check():
     """Diagnostic health check endpoint for deployment verification."""
+    if init_error:
+        return jsonify({
+            "status": "initialization_failed",
+            "error": init_error,
+            "traceback": init_tb,
+            "cwd": os.getcwd()
+        }), 500
+
     return jsonify({
         "status": "healthy",
         "nodes_count": len(sg.graph.nodes),
@@ -95,6 +101,9 @@ def health_check():
 @app.route("/api/landmarks", methods=["GET"])
 def get_landmarks():
     """Return all campus landmark POIs with metadata."""
+    if not sg:
+        return jsonify({"error": "Graph uninitialized"}), 500
+
     landmarks = []
     for node_id, data in sg.graph.nodes(data=True):
         landmarks.append({
@@ -113,6 +122,9 @@ def get_landmarks():
 @app.route("/api/connections", methods=["GET"])
 def get_connections():
     """Return all campus walkway segments for visual background graph."""
+    if not sg:
+        return jsonify({"error": "Graph uninitialized"}), 500
+
     connections = []
     seen = set()
     for u, v, data in sg.graph.edges(data=True):
@@ -139,6 +151,9 @@ def get_connections():
 @app.route("/api/route", methods=["POST"])
 def calculate_route():
     """Execute heuristic search and return optimal path + performance metrics."""
+    if not engine:
+        return jsonify({"success": False, "error_message": "Engine uninitialized."}), 500
+
     data = request.get_json() or {}
     start = data.get("start")
     goal = data.get("goal")
@@ -183,6 +198,9 @@ def calculate_route():
 @app.route("/api/compare", methods=["POST"])
 def compare_algorithms():
     """Run all 4 search algorithms on the same query for academic performance comparison."""
+    if not engine:
+        return jsonify({"error": "Engine uninitialized"}), 500
+
     data = request.get_json() or {}
     start = data.get("start")
     goal = data.get("goal")
@@ -199,6 +217,9 @@ def compare_algorithms():
 @app.route("/api/simulation", methods=["POST"])
 def set_simulation():
     """Apply dynamic event disruptions to campus graph."""
+    if not simulator:
+        return jsonify({"error": "Simulator uninitialized"}), 500
+
     data = request.get_json() or {}
     event_type = data.get("event", "none")
 

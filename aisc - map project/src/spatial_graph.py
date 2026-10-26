@@ -4,6 +4,7 @@ Manages campus nodes, pathways, Haversine spatial calculations,
 and OpenStreetMap / CSV data ingestion using NetworkX.
 """
 
+import io
 import csv
 import math
 import logging
