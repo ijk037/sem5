@@ -240,20 +240,67 @@
           </div>
 
           <!-- Card 3: Quick CSP Concept Cheat Sheet -->
-          <div class="cute-card p-5 space-y-3">
-            <h2 class="text-sm font-bold text-gray-800 flex items-center gap-1.5">
-              <span>💡</span> CSP Quick Concept
-            </h2>
-            <div class="space-y-2 text-xs text-gray-600 leading-relaxed">
-              <p>
-                <strong>Variables ($X_i$):</strong> Rows $0$ through $N-1$, where each row must hold exactly 1 cat.
-              </p>
-              <p>
-                <strong>Domain ($D_i$):</strong> Possible column values $\{0, 1, \dots, N-1\}$.
-              </p>
-              <p>
-                <strong>Constraints ($C$):</strong> No two cats share the same column ($C_i \neq C_j$) or diagonal ($|C_i - C_j| \neq |i - j|$).
-              </p>
+          <div class="cute-card p-5 space-y-3 border-l-4 border-pink-400 bg-gradient-to-br from-pink-50/40 via-white to-purple-50/30">
+            <div class="flex items-center justify-between">
+              <h2 class="text-sm font-extrabold text-gray-800 flex items-center gap-1.5">
+                <span>💡</span> CSP Formulation: (X, D, C)
+              </h2>
+              <span class="text-[10px] font-bold px-2 py-0.5 bg-pink-100 text-pink-700 rounded-full">Academic Model</span>
+            </div>
+
+            <div class="space-y-2.5 text-xs text-gray-700">
+              <!-- Variables X -->
+              <div class="bg-white/90 p-2.5 rounded-xl border border-pink-100/80 shadow-sm space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-extrabold text-pink-700 flex items-center gap-1">
+                    <span>👑</span> Variables (X)
+                  </span>
+                  <code class="px-1.5 py-0.5 bg-pink-50 text-pink-800 rounded text-[11px] font-mono font-bold">X = { Q₀, Q₁, ..., Qₙ₋₁ }</code>
+                </div>
+                <p class="text-[11px] text-gray-600 leading-snug">
+                  Each variable <span class="font-semibold text-gray-800">Qᵣ</span> represents the kitten in row <span class="font-semibold text-gray-800">r</span>. Exactly 1 kitten per row is placed, implicitly satisfying the row constraint.
+                </p>
+              </div>
+
+              <!-- Domains D -->
+              <div class="bg-white/90 p-2.5 rounded-xl border border-purple-100/80 shadow-sm space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-extrabold text-purple-700 flex items-center gap-1">
+                    <span>🎯</span> Domains D(Qᵣ)
+                  </span>
+                  <code class="px-1.5 py-0.5 bg-purple-50 text-purple-800 rounded text-[11px] font-mono font-bold">D = { 0, 1, ..., N - 1 }</code>
+                </div>
+                <p class="text-[11px] text-gray-600 leading-snug">
+                  Possible column values for each row. Forward checking prunes attacked column coordinates from future rows.
+                </p>
+              </div>
+
+              <!-- Constraints C -->
+              <div class="bg-white/90 p-2.5 rounded-xl border border-rose-100/80 shadow-sm space-y-1.5">
+                <span class="font-extrabold text-rose-700 flex items-center gap-1">
+                  <span>⚔️</span> Constraints (C)
+                </span>
+                <div class="grid grid-cols-1 gap-1 text-[11px]">
+                  <div class="flex items-center justify-between bg-rose-50/50 px-2.5 py-1 rounded-lg border border-rose-100/60">
+                    <span class="font-medium text-gray-700">No Same Column:</span>
+                    <code class="font-mono text-rose-700 font-bold">Q[i] ≠ Q[j]</code>
+                  </div>
+                  <div class="flex items-center justify-between bg-rose-50/50 px-2.5 py-1 rounded-lg border border-rose-100/60">
+                    <span class="font-medium text-gray-700">No Same Diagonal:</span>
+                    <code class="font-mono text-rose-700 font-bold">|Q[i] - Q[j]| ≠ |i - j|</code>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Forward Checking & Backtracking -->
+              <div class="bg-amber-50/70 p-2.5 rounded-xl border border-amber-200/80 text-[11px] text-amber-900 space-y-1">
+                <div class="font-extrabold text-amber-800 flex items-center gap-1">
+                  <span>🔄</span> Solving Mechanism
+                </div>
+                <p class="text-gray-600 leading-snug">
+                  <strong>Forward Checking:</strong> Eliminates conflicting moves ahead of time. If any row has 0 legal options left (<em>Domain Wipeout</em>), the search immediately <strong>Backtracks</strong> to try the next valid choice.
+                </p>
+              </div>
             </div>
           </div>
 
@@ -286,14 +333,30 @@
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="text-xl">🔍</span>
-              <h3 class="font-bold text-gray-800">Backtracking (DFS)</h3>
+              <div>
+                <h3 class="font-bold text-gray-800">Backtracking (DFS)</h3>
+                <span class="text-[10px] text-pink-600 font-medium">Systematic Tree Search</span>
+              </div>
             </div>
-            <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full">Guaranteed Complete</span>
+            <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full">Guaranteed Complete</span>
           </div>
 
-          <p class="text-xs text-gray-600 leading-relaxed">
-            Explores the search tree depth-first. Prunes unfeasible subtrees as soon as a constraint is violated, guaranteeing finding a solution.
-          </p>
+          <!-- Comprehensive Overview & Mechanism -->
+          <div class="space-y-2 text-xs text-gray-600 leading-relaxed">
+            <p>
+              Systematically builds a solution one row at a time. Each queen assignment is tested against all previously placed queens. If a conflict occurs or forward checking detects a dead end, it <strong>backtracks</strong> to try alternative columns.
+            </p>
+            <div class="bg-pink-50/60 p-2.5 rounded-xl border border-pink-100 text-[11px] space-y-1">
+              <div class="font-bold text-pink-800">Key Mechanism:</div>
+              <ul class="list-disc list-inside space-y-0.5 text-gray-700">
+                <li><strong>State Representation:</strong> Partial assignment (0 to N queens placed).</li>
+                <li><strong>Pruning:</strong> Abandons entire subtrees as soon as constraints are violated.</li>
+                <li><strong>Completeness:</strong> 100% complete (always finds a solution or proves none exists).</li>
+                <li><strong>Time Complexity:</strong> O(N!) worst-case factorial, reduced dramatically by pruning.</li>
+                <li><strong>Space Complexity:</strong> O(N) recursion stack memory.</li>
+              </ul>
+            </div>
+          </div>
 
           <!-- Mini Board Preview -->
           <div class="w-full max-w-[280px] aspect-square mx-auto p-2 bg-amber-50 rounded-xl border border-amber-200">
@@ -322,14 +385,30 @@
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="text-xl">⛰️</span>
-              <h3 class="font-bold text-gray-800">Hill Climbing (Min-Conflicts)</h3>
+              <div>
+                <h3 class="font-bold text-gray-800">Hill Climbing (Min-Conflicts)</h3>
+                <span class="text-[10px] text-purple-600 font-medium">Local Heuristic Search</span>
+              </div>
             </div>
-            <span class="px-2 py-0.5 bg-purple-100 text-purple-800 text-xs font-bold rounded-full">Local Search Heuristic</span>
+            <span class="px-2 py-0.5 bg-purple-100 text-purple-800 text-[10px] font-bold rounded-full">Heuristic Optimization</span>
           </div>
 
-          <p class="text-xs text-gray-600 leading-relaxed">
-            Starts with all $N$ cats placed randomly and greedily shifts conflicted cats to columns with the minimum conflicts. Escapes plateaus with random restarts.
-          </p>
+          <!-- Comprehensive Overview & Mechanism -->
+          <div class="space-y-2 text-xs text-gray-600 leading-relaxed">
+            <p>
+              Operates on <strong>complete states</strong> with all N queens on the board. In each iteration, it selects a conflicted queen at random and moves it to the column within its row that minimizes the objective conflict heuristic h(n).
+            </p>
+            <div class="bg-purple-50/60 p-2.5 rounded-xl border border-purple-100 text-[11px] space-y-1">
+              <div class="font-bold text-purple-800">Key Mechanism:</div>
+              <ul class="list-disc list-inside space-y-0.5 text-gray-700">
+                <li><strong>State Representation:</strong> Complete state (all N queens placed simultaneously).</li>
+                <li><strong>Heuristic Function:</strong> h(n) = number of conflicting queen pairs. Goal is h(n) = 0.</li>
+                <li><strong>Plateau Escape:</strong> Random restarts prevent getting trapped in local minima.</li>
+                <li><strong>Empirical Speed:</strong> Solves massive boards (N = 10,000+) in almost linear O(N) time!</li>
+                <li><strong>Space Complexity:</strong> O(N) constant memory (just the 1D position array).</li>
+              </ul>
+            </div>
+          </div>
 
           <!-- Mini Board Preview -->
           <div class="w-full max-w-[280px] aspect-square mx-auto p-2 bg-purple-50 rounded-xl border border-purple-200">
@@ -376,8 +455,8 @@
             </tr>
             <tr>
               <td class="py-2.5 pr-4 font-semibold text-gray-900">State Representation</td>
-              <td class="py-2.5 px-4">Partial assignments (0 to $N$ queens placed)</td>
-              <td class="py-2.5 pl-4">Complete assignments ($N$ queens always placed)</td>
+              <td class="py-2.5 px-4">Partial assignments (0 to N queens placed)</td>
+              <td class="py-2.5 pl-4">Complete assignments (All N queens placed simultaneously)</td>
             </tr>
             <tr>
               <td class="py-2.5 pr-4 font-semibold text-gray-900">Completeness</td>
@@ -386,13 +465,13 @@
             </tr>
             <tr>
               <td class="py-2.5 pr-4 font-semibold text-gray-900">Space Complexity</td>
-              <td class="py-2.5 px-4">$O(N)$ stack memory</td>
-              <td class="py-2.5 pl-4">$O(N)$ state memory</td>
+              <td class="py-2.5 px-4">O(N) stack memory</td>
+              <td class="py-2.5 pl-4">O(N) state memory</td>
             </tr>
             <tr>
-              <td class="py-2.5 pr-4 font-semibold text-gray-900">Scalability ($N = 1000+$)</td>
-              <td class="py-2.5 px-4">Exponential worst case ($O(N!)$)</td>
-              <td class="py-2.5 pl-4">Often solves in almost $O(N)$ steps in practice!</td>
+              <td class="py-2.5 pr-4 font-semibold text-gray-900">Scalability (N = 1,000+)</td>
+              <td class="py-2.5 px-4">Exponential worst case (O(N!))</td>
+              <td class="py-2.5 pl-4">Often solves in almost O(N) steps in practice!</td>
             </tr>
           </tbody>
         </table>

@@ -7,7 +7,7 @@ class CatstraintsApp {
     this.csp = new CSPEngine(8);
     this.placements = []; // Array of {row, col}
     this.mode = 'manual'; // 'manual' | 'backtracking' | 'hillclimbing'
-    this.activeTab = 'play'; // 'play' | 'compare' | 'syllabus'
+    this.activeTab = 'play'; // 'play' | 'compare'
 
     // Visualizer state
     this.animInterval = null;
@@ -262,6 +262,7 @@ class CatstraintsApp {
       if (manualInstructions) manualInstructions.classList.add('hidden');
       if (visualizerHelp) visualizerHelp.classList.remove('hidden');
       this.resetSolver();
+      this.play();
     }
 
     this.renderBoard();
@@ -338,7 +339,9 @@ class CatstraintsApp {
   }
 
   handleTileClick(r, c) {
-    if (this.mode !== 'manual') return;
+    if (this.mode !== 'manual') {
+      this.setMode('manual');
+    }
 
     // Check if a cat is already on this square
     const idx = this.placements.findIndex(p => p.row === r && p.col === c);
@@ -562,6 +565,12 @@ class CatstraintsApp {
       this.btGenerator = this.csp.backtrackingGenerator();
     } else if (this.mode === 'hillclimbing') {
       this.hcGenerator = this.csp.hillClimbingGenerator();
+      const firstStep = this.hcGenerator.next().value;
+      if (firstStep) {
+        this.applyHillClimbingStep(firstStep);
+        this.history.push(firstStep);
+        this.historyIndex = 0;
+      }
     }
 
     this.renderBoard();
@@ -591,6 +600,10 @@ class CatstraintsApp {
       this.resetSolver();
     }
 
+    if (this.animInterval) {
+      clearInterval(this.animInterval);
+      this.animInterval = null;
+    }
     this.animInterval = setInterval(() => {
       const hasMore = this.stepForward();
       if (!hasMore) {
@@ -676,6 +689,7 @@ class CatstraintsApp {
     } else if (step.type === 'backtrack') {
       window.cuteAudio.playBacktrack();
     } else if (step.type === 'solution') {
+      this.pause();
       this.checkVictory();
     }
 
@@ -703,6 +717,7 @@ class CatstraintsApp {
     } else if (step.type === 'hc_restart') {
       window.cuteAudio.playBacktrack();
     } else if (step.type === 'hc_success') {
+      this.pause();
       this.checkVictory();
     }
 
