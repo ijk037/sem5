@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐱 Cat-straints: The N-Kittens Challenge | CSP & AI Search</title>
+  <meta name="description" content="An interactive, cute visualizer for the N-Queens Constraint Satisfaction Problem using adorable kittens, real-time laser conflict beams, animated backtracking, and hill climbing search comparison.">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Fredoka & Quicksand -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            pawPink: '#ff8fa3',
+            pawDarkPink: '#ff4d6d',
+            pawPeach: '#ffd6a5',
+            pawLavender: '#c8b6ff',
+            pawMint: '#caffbf',
+            pawCream: '#fff9f0'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="relative min-h-screen pb-16 antialiased selection:bg-pink-200 selection:text-pink-900">
+
+  <!-- Fireworks Canvas Layer -->
+  <canvas id="fireworksCanvas"></canvas>
+
+  <!-- Decorative Paw Prints in background -->
+  <div class="fixed inset-0 paw-bg-pattern pointer-events-none -z-10"></div>
+
+  <!-- Header -->
+  <header class="max-w-6xl mx-auto px-4 pt-6 pb-4">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="text-center md:text-left">
+        <div class="flex items-center justify-center md:justify-start gap-2">
+          <span class="text-3xl">🐾</span>
+          <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-pink-600 via-rose-500 to-purple-600 bg-clip-text text-transparent">
+            Cat-straints: N-Kittens
+          </h1>
+          <span class="text-3xl">🐱</span>
+        </div>
+        <p class="text-xs md:text-sm text-pink-700/80 font-medium mt-1">
+          Constraint Satisfaction Problem (CSP) • Backtracking • Min-Conflicts Hill Climbing
+        </p>
+      </div>
+
+      <!-- Quick Action Controls -->
+      <div class="flex items-center gap-2 flex-wrap justify-center">
+        <button id="btnLaunchFireworks" class="cute-btn px-3 py-1.5 bg-white text-pink-600 hover:bg-pink-50 border border-pink-200 text-xs md:text-sm flex items-center gap-1.5" title="Celebrate with fireworks!">
+          <span>🎆</span> Fireworks
+        </button>
+        <button id="btnToggleSound" class="cute-btn px-3.5 py-1.5 bg-white text-pink-600 hover:bg-pink-50 border border-pink-200 text-xs md:text-sm flex items-center gap-1.5">
+          🔊 Sound: On
+        </button>
+        <span class="px-2.5 py-1 bg-pink-100 text-pink-700 font-semibold text-xs rounded-full">
+          N-Queens 🐈 Edition
+        </span>
+      </div>
+    </div>
+
+    <!-- Navigation Pills / Tabs -->
+    <nav class="flex items-center justify-center gap-2 mt-6">
+      <button data-tab-target="play" class="cute-btn px-5 py-2 text-sm md:text-base cute-tab-active flex items-center gap-2">
+        <span>🎮</span> Play & Solve
+      </button>
+      <button data-tab-target="compare" class="cute-btn px-5 py-2 text-sm md:text-base bg-white text-pink-600 hover:bg-pink-50 border border-pink-200 flex items-center gap-2">
+        <span>⚔️</span> Algorithm Showdown
+      </button>
+      <button data-tab-target="syllabus" class="cute-btn px-5 py-2 text-sm md:text-base bg-white text-pink-600 hover:bg-pink-50 border border-pink-200 flex items-center gap-2">
+        <span>📚</span> CSP Syllabus
+      </button>
+    </nav>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="max-w-6xl mx-auto px-4 mt-4">
+
+    <!-- TAB 1: PLAY & SOLVE -->
+    <section id="tab-play" class="tab-panel">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- Left Column: Board and Live Laser Overlay -->
+        <div class="lg:col-span-7 flex flex-col items-center">
+          
+          <!-- Board Header / Live Stats Bar -->
+          <div class="w-full cute-card p-4 mb-4 flex items-center justify-between flex-wrap gap-3">
+            <div class="flex items-center gap-4">
+              <div class="flex flex-col">
+                <span class="text-[11px] font-semibold uppercase tracking-wider text-pink-500">Kitties Placed</span>
+                <span id="statPlaced" class="text-xl font-bold text-gray-800">0 / 8</span>
+              </div>
+              <div class="h-8 w-px bg-pink-200"></div>
+              <div class="flex flex-col">
+                <span class="text-[11px] font-semibold uppercase tracking-wider text-pink-500">Conflicts</span>
+                <span id="statConflicts" class="text-xl font-bold text-emerald-600">0</span>
+              </div>
+            </div>
+
+            <!-- Solved / Alert status badge -->
+            <div id="boardStatusPill" class="px-3 py-1 bg-pink-100 text-pink-700 text-sm font-medium rounded-full shadow-sm">
+              🐾 Place 8 more kitties
+            </div>
+          </div>
+
+          <!-- The Chessboard & Laser Raytracing Canvas -->
+          <div class="w-full max-w-[500px] aspect-square relative cute-card p-3 shadow-xl overflow-hidden flex items-center justify-center">
+            <div id="boardWrapper" class="relative w-full h-full rounded-xl overflow-hidden bg-amber-900/10 p-1">
+              <!-- Laser Beams Canvas -->
+              <canvas id="laserCanvas" class="laser-canvas"></canvas>
+              
+              <!-- Chessboard Grid -->
+              <div id="chessboard" class="board-container w-full h-full grid gap-1">
+                <!-- Grid cells dynamically generated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Action Buttons -->
+          <div class="flex items-center justify-center gap-2 mt-4 flex-wrap w-full max-w-[500px]">
+            <button id="btnClear" class="cute-btn px-4 py-2 bg-white text-rose-600 hover:bg-rose-50 border border-rose-200 text-xs md:text-sm flex items-center gap-1.5">
+              <span>🧹</span> Clear
+            </button>
+            <button id="btnRandomize" class="cute-btn px-4 py-2 bg-white text-amber-600 hover:bg-amber-50 border border-amber-200 text-xs md:text-sm flex items-center gap-1.5">
+              <span>🎲</span> Random
+            </button>
+            <button id="btnHint" class="cute-btn px-4 py-2 bg-white text-purple-600 hover:bg-purple-50 border border-purple-200 text-xs md:text-sm flex items-center gap-1.5">
+              <span>💡</span> Hint
+            </button>
+            <button id="btnAutoSolve" class="cute-btn px-5 py-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:from-pink-600 hover:to-rose-600 text-xs md:text-sm flex items-center gap-1.5 shadow-md">
+              <span>⚡</span> Auto Solve
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Column: Interactive Controls & Theory Insights -->
+        <div class="lg:col-span-5 space-y-5">
+
+          <!-- Card 1: Mode & Board Size Settings -->
+          <div class="cute-card p-5 space-y-4">
+            <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+              <span>⚙️</span> Puzzle Settings
+            </h2>
+
+            <!-- Board Size Slider & Quick Pills -->
+            <div class="space-y-2">
+              <div class="flex justify-between items-center text-sm font-semibold text-gray-700">
+                <span>Board Size (<span class="font-serif">N</span> × <span class="font-serif">N</span>):</span>
+                <span id="boardSizeVal" class="px-2.5 py-0.5 bg-pink-100 text-pink-700 rounded-full font-bold">8 × 8</span>
+              </div>
+              <input id="boardSizeSlider" type="range" min="4" max="12" value="8" step="1" class="w-full cursor-pointer h-2 bg-pink-200 rounded-lg">
+              
+              <div class="flex items-center justify-between text-xs font-semibold text-pink-700/80 pt-1">
+                <button data-quick-size="4" class="hover:underline">4×4</button>
+                <button data-quick-size="6" class="hover:underline">6×6</button>
+                <button data-quick-size="8" class="hover:underline font-bold text-pink-800 underline">8×8 (Classic)</button>
+                <button data-quick-size="10" class="hover:underline">10×10</button>
+                <button data-quick-size="12" class="hover:underline">12×12</button>
+              </div>
+            </div>
+
+            <div class="h-px bg-pink-100 my-2"></div>
+
+            <!-- Mode Selector -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-pink-500 mb-2">Interaction Mode</label>
+              <div class="grid grid-cols-3 gap-1.5 bg-pink-50/70 p-1 rounded-2xl border border-pink-100">
+                <button data-mode-btn="manual" class="cute-btn py-1.5 text-xs cute-tab-active">
+                  🐾 Manual
+                </button>
+                <button data-mode-btn="backtracking" class="cute-btn py-1.5 text-xs bg-pink-50 text-pink-700 hover:bg-pink-100">
+                  🔍 Backtrack
+                </button>
+                <button data-mode-btn="hillclimbing" class="cute-btn py-1.5 text-xs bg-pink-50 text-pink-700 hover:bg-pink-100">
+                  ⛰️ Hill Climb
+                </button>
+              </div>
+            </div>
+
+            <!-- Manual Instructions Notice -->
+            <div id="manualInstructions" class="p-3 bg-pink-50 rounded-xl text-xs text-pink-900 border border-pink-200 leading-relaxed">
+              <strong>How to play:</strong> Click any square to place or move a kitty. Each row, column, and diagonal can only hold <strong>1 kitty</strong>. Glowing red laser beams show kitties eyeing each other down! Complete the puzzle to trigger fireworks! 🎆
+            </div>
+
+            <!-- Visualizer Help Notice -->
+            <div id="visualizerHelp" class="hidden p-3 bg-purple-50 rounded-xl text-xs text-purple-900 border border-purple-200 leading-relaxed">
+              <strong>AI Visualizer Active:</strong> Watch the algorithm systematically explore the state space. Use the play, step, or speed controls below to follow along node-by-node!
+            </div>
+          </div>
+
+          <!-- Card 2: AI Solver Animation Controls (visible for Backtracking / Hill Climbing) -->
+          <div id="animControls" class="cute-card p-5 space-y-4 hidden border-2 border-pink-300">
+            <div class="flex items-center justify-between">
+              <h2 class="text-base font-bold text-gray-800 flex items-center gap-1.5">
+                <span>🎬</span> Search Visualizer
+              </h2>
+              <span id="visualizerStat1" class="text-xs font-semibold px-2.5 py-0.5 bg-purple-100 text-purple-700 rounded-full">Ready</span>
+            </div>
+
+            <!-- Playback Toolbar -->
+            <div class="flex items-center justify-center gap-2">
+              <button id="btnStepBackward" class="cute-btn px-3 py-2 bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 text-xs" title="Step Back">
+                ⏮️ Step Back
+              </button>
+              <button id="btnPlayPause" class="cute-btn px-5 py-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-sm font-bold shadow-md hover:from-pink-600 hover:to-rose-600">
+                ▶️ Play
+              </button>
+              <button id="btnStepForward" class="cute-btn px-3 py-2 bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 text-xs" title="Step Forward">
+                Step ⏭️
+              </button>
+              <button id="btnReset" class="cute-btn px-3 py-2 bg-white text-rose-600 border border-rose-200 hover:bg-rose-50 text-xs" title="Reset Search">
+                🔄 Reset
+              </button>
+            </div>
+
+            <!-- Speed Slider -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs text-gray-600 font-medium">
+                <span>Animation Speed:</span>
+                <span class="text-pink-600 font-bold">Slow ↔ Fast</span>
+              </div>
+              <input id="animSpeedSlider" type="range" min="1" max="100" value="65" class="w-full cursor-pointer h-1.5 bg-pink-200 rounded-lg">
+            </div>
+
+            <!-- Live Status Readout -->
+            <div class="bg-white/80 p-3 rounded-xl border border-pink-100 text-xs flex justify-between items-center text-gray-700">
+              <span class="font-medium text-pink-700">Current Search State:</span>
+              <span id="visualizerStat2" class="font-bold text-gray-800">Nodes: 0</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Quick CSP Concept Cheat Sheet -->
+          <div class="cute-card p-5 space-y-3">
+            <h2 class="text-sm font-bold text-gray-800 flex items-center gap-1.5">
+              <span>💡</span> CSP Quick Concept
+            </h2>
+            <div class="space-y-2 text-xs text-gray-600 leading-relaxed">
+              <p>
+                <strong>Variables ($X_i$):</strong> Rows $0$ through $N-1$, where each row must hold exactly 1 cat.
+              </p>
+              <p>
+                <strong>Domain ($D_i$):</strong> Possible column values $\{0, 1, \dots, N-1\}$.
+              </p>
+              <p>
+                <strong>Constraints ($C$):</strong> No two cats share the same column ($C_i \neq C_j$) or diagonal ($|C_i - C_j| \neq |i - j|$).
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB 2: ALGORITHM SHOWDOWN (COMPARISON) -->
+    <section id="tab-compare" class="tab-panel hidden space-y-6">
+      
+      <!-- Showdown Header Banner -->
+      <div class="cute-card p-6 text-center max-w-3xl mx-auto space-y-3">
+        <h2 class="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+          ⚔️ Algorithm Showdown: Backtracking vs. Hill Climbing
+        </h2>
+        <p class="text-xs md:text-sm text-gray-600">
+          Compare <strong>Systematic Search (Backtracking)</strong> with <strong>Local Heuristic Search (Min-Conflicts Hill Climbing)</strong> on the exact same board size!
+        </p>
+        <button id="btnRunBenchmark" class="cute-btn px-6 py-2.5 bg-gradient-to-r from-pink-500 via-rose-500 to-purple-600 text-white font-bold text-sm shadow-lg hover:scale-105 inline-flex items-center gap-2">
+          <span>🚀</span> Run Live Race & Benchmark
+        </button>
+      </div>
+
+      <!-- Dual Board Comparison Display -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        
+        <!-- Algorithm 1: Systematic Backtracking -->
+        <div class="cute-card p-5 space-y-4 border-t-4 border-pink-400">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-xl">🔍</span>
+              <h3 class="font-bold text-gray-800">Backtracking (DFS)</h3>
+            </div>
+            <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full">Guaranteed Complete</span>
+          </div>
+
+          <p class="text-xs text-gray-600 leading-relaxed">
+            Explores the search tree depth-first. Prunes unfeasible subtrees as soon as a constraint is violated, guaranteeing finding a solution.
+          </p>
+
+          <!-- Mini Board Preview -->
+          <div class="w-full max-w-[280px] aspect-square mx-auto p-2 bg-amber-50 rounded-xl border border-amber-200">
+            <div id="boardBacktracking" class="w-full h-full grid rounded overflow-hidden gap-0.5"></div>
+          </div>
+
+          <!-- Metrics Scorecard -->
+          <div class="grid grid-cols-3 gap-2 text-center text-xs">
+            <div class="bg-pink-50 p-2 rounded-lg border border-pink-100">
+              <span class="block text-[10px] text-pink-600 font-semibold">Time</span>
+              <span id="benchBtTime" class="font-bold text-gray-800">-</span>
+            </div>
+            <div class="bg-pink-50 p-2 rounded-lg border border-pink-100">
+              <span class="block text-[10px] text-pink-600 font-semibold">Nodes Explored</span>
+              <span id="benchBtNodes" class="font-bold text-gray-800">-</span>
+            </div>
+            <div class="bg-pink-50 p-2 rounded-lg border border-pink-100">
+              <span class="block text-[10px] text-pink-600 font-semibold">Backtracks</span>
+              <span id="benchBtBacktracks" class="font-bold text-gray-800">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Algorithm 2: Min-Conflicts Hill Climbing -->
+        <div class="cute-card p-5 space-y-4 border-t-4 border-purple-400">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-xl">⛰️</span>
+              <h3 class="font-bold text-gray-800">Hill Climbing (Min-Conflicts)</h3>
+            </div>
+            <span class="px-2 py-0.5 bg-purple-100 text-purple-800 text-xs font-bold rounded-full">Local Search Heuristic</span>
+          </div>
+
+          <p class="text-xs text-gray-600 leading-relaxed">
+            Starts with all $N$ cats placed randomly and greedily shifts conflicted cats to columns with the minimum conflicts. Escapes plateaus with random restarts.
+          </p>
+
+          <!-- Mini Board Preview -->
+          <div class="w-full max-w-[280px] aspect-square mx-auto p-2 bg-purple-50 rounded-xl border border-purple-200">
+            <div id="boardHillClimbing" class="w-full h-full grid rounded overflow-hidden gap-0.5"></div>
+          </div>
+
+          <!-- Metrics Scorecard -->
+          <div class="grid grid-cols-3 gap-2 text-center text-xs">
+            <div class="bg-purple-50 p-2 rounded-lg border border-purple-100">
+              <span class="block text-[10px] text-purple-600 font-semibold">Time</span>
+              <span id="benchHcTime" class="font-bold text-gray-800">-</span>
+            </div>
+            <div class="bg-purple-50 p-2 rounded-lg border border-purple-100">
+              <span class="block text-[10px] text-purple-600 font-semibold">Steps / Moves</span>
+              <span id="benchHcSteps" class="font-bold text-gray-800">-</span>
+            </div>
+            <div class="bg-purple-50 p-2 rounded-lg border border-purple-100">
+              <span class="block text-[10px] text-purple-600 font-semibold">Restarts</span>
+              <span id="benchHcRestarts" class="font-bold text-gray-800">-</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- In-Depth Theoretical Comparison Table -->
+      <div class="cute-card p-6 max-w-4xl mx-auto overflow-x-auto">
+        <h3 class="text-base font-bold text-gray-800 mb-3 flex items-center gap-2">
+          <span>📊</span> Algorithmic Trade-off Analysis
+        </h3>
+        <table class="w-full text-left text-xs text-gray-700">
+          <thead>
+            <tr class="border-b border-pink-200 text-pink-700">
+              <th class="py-2 pr-4 font-bold">Property</th>
+              <th class="py-2 px-4 font-bold">Backtracking Search</th>
+              <th class="py-2 pl-4 font-bold">Min-Conflicts Hill Climbing</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-pink-100">
+            <tr>
+              <td class="py-2.5 pr-4 font-semibold text-gray-900">Paradigm</td>
+              <td class="py-2.5 px-4">Systematic Tree Search (DFS)</td>
+              <td class="py-2.5 pl-4">Local Optimization / Heuristic Search</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 pr-4 font-semibold text-gray-900">State Representation</td>
+              <td class="py-2.5 px-4">Partial assignments (0 to $N$ queens placed)</td>
+              <td class="py-2.5 pl-4">Complete assignments ($N$ queens always placed)</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 pr-4 font-semibold text-gray-900">Completeness</td>
+              <td class="py-2.5 px-4"><span class="text-emerald-700 font-bold">Complete:</span> Always finds a solution if one exists</td>
+              <td class="py-2.5 pl-4"><span class="text-amber-700 font-bold">Incomplete:</span> Can get stuck in local minima without restarts</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 pr-4 font-semibold text-gray-900">Space Complexity</td>
+              <td class="py-2.5 px-4">$O(N)$ stack memory</td>
+              <td class="py-2.5 pl-4">$O(N)$ state memory</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 pr-4 font-semibold text-gray-900">Scalability ($N = 1000+$)</td>
+              <td class="py-2.5 px-4">Exponential worst case ($O(N!)$)</td>
+              <td class="py-2.5 pl-4">Often solves in almost $O(N)$ steps in practice!</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+    <!-- TAB 3: SYLLABUS & LEARNING HUB -->
+    <section id="tab-syllabus" class="tab-panel hidden space-y-6">
+      
+      <!-- Syllabus Hero -->
+      <div class="cute-card p-6 max-w-4xl mx-auto space-y-3">
+        <div class="flex items-center gap-3">
+          <span class="text-3xl">📖</span>
+          <div>
+            <h2 class="text-xl md:text-2xl font-bold text-gray-800">
+              Constraint Satisfaction & AI Search Curriculum
+            </h2>
+            <p class="text-xs md:text-sm text-pink-700">
+              Master the core foundations of CSP, state-space search, backtracking, and local optimization.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+
+        <!-- Card 1: What is a CSP? -->
+        <div class="cute-card p-5 space-y-3 syllabus-card">
+          <div class="flex items-center gap-2 text-pink-600 font-bold text-base">
+            <span>🧩</span> Module 1: Formal Definition of CSP
+          </div>
+          <p class="text-xs text-gray-700 leading-relaxed">
+            A <strong>Constraint Satisfaction Problem (CSP)</strong> consists of a tuple $(X, D, C)$:
+          </p>
+          <ul class="text-xs text-gray-600 space-y-1.5 list-disc list-inside">
+            <li><strong>Variables $X = \{X_1, X_2, \dots, X_N\}$:</strong> Each row $i$ represents a cat variable.</li>
+            <li><strong>Domains $D_i = \{0, 1, \dots, N-1\}$:</strong> The possible column coordinates for row $i$.</li>
+            <li><strong>Constraints $C$:</strong> For every pair of cats $(i, j)$ with $i \neq j$:
+              <div class="bg-pink-50 p-2 rounded-lg font-mono text-[11px] text-pink-900 my-1">
+                Column conflict: X[i] ≠ X[j]<br>
+                Diagonal conflict: |X[i] - X[j]| ≠ |i - j|
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Card 2: State Space Search -->
+        <div class="cute-card p-5 space-y-3 syllabus-card">
+          <div class="flex items-center gap-2 text-purple-600 font-bold text-base">
+            <span>🌳</span> Module 2: State-Space Representation
+          </div>
+          <p class="text-xs text-gray-700 leading-relaxed">
+            The state space represents all possible configurations of the problem:
+          </p>
+          <ul class="text-xs text-gray-600 space-y-1.5 list-disc list-inside">
+            <li><strong>Naive Unconstrained Search:</strong> $N^N$ states (for $N=8$, that's $8^8 = 16,777,216$ states!).</li>
+            <li><strong>Permutation Formulation:</strong> Enforcing 1 queen per row and column leaves $N!$ states ($8! = 40,320$ states).</li>
+            <li><strong>Search Tree:</strong> Root node represents an empty board. Each depth level assigns a queen to a new row.</li>
+          </ul>
+        </div>
+
+        <!-- Card 3: Backtracking Algorithm -->
+        <div class="cute-card p-5 space-y-3 syllabus-card">
+          <div class="flex items-center gap-2 text-rose-600 font-bold text-base">
+            <span>↩️</span> Module 3: Backtracking Search (DFS)
+          </div>
+          <p class="text-xs text-gray-700 leading-relaxed">
+            Backtracking is depth-first search tailored for CSPs:
+          </p>
+          <ul class="text-xs text-gray-600 space-y-1.5 list-disc list-inside">
+            <li><strong>Incremental Formulation:</strong> Assigns one variable at a time.</li>
+            <li><strong>Pruning:</strong> Whenever an assignment violates a constraint, the algorithm <em>backtracks</em> immediately, abandoning the entire sub-tree of invalid states.</li>
+            <li><strong>Heuristics:</strong> Can be enhanced with MRV (Minimum Remaining Values) and Forward Checking.</li>
+          </ul>
+        </div>
+
+        <!-- Card 4: Hill Climbing & Min-Conflicts -->
+        <div class="cute-card p-5 space-y-3 syllabus-card">
+          <div class="flex items-center gap-2 text-amber-600 font-bold text-base">
+            <span>⛰️</span> Module 4: Min-Conflicts Local Search
+          </div>
+          <p class="text-xs text-gray-700 leading-relaxed">
+            Local search operates on complete states (all $N$ cats already on the board):
+          </p>
+          <ul class="text-xs text-gray-600 space-y-1.5 list-disc list-inside">
+            <li><strong>Objective Function $h(n)$:</strong> Total number of conflicting pairs. The goal is to reach $h(n) = 0$.</li>
+            <li><strong>Min-Conflicts Heuristic:</strong> Selects a randomly conflicted cat, then moves it to the column that minimizes $h(n)$.</li>
+            <li><strong>Escaping Local Minima:</strong> Plateaus and local valleys are resolved using <strong>random restarts</strong>.</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Real World Applications Callout -->
+      <div class="cute-card p-6 max-w-4xl mx-auto space-y-2 border-l-4 border-pink-500">
+        <h3 class="text-sm font-bold text-gray-800 flex items-center gap-2">
+          <span>🌍</span> Real-World CSP Applications
+        </h3>
+        <p class="text-xs text-gray-600 leading-relaxed">
+          While $N$-Queens is the classical AI benchmark, the same CSP algorithms power:
+        </p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2 text-xs text-gray-700 font-medium">
+          <div class="p-2.5 bg-pink-50/60 rounded-xl border border-pink-100 flex items-center gap-2">
+            <span>📅</span> University Timetabling
+          </div>
+          <div class="p-2.5 bg-purple-50/60 rounded-xl border border-purple-100 flex items-center gap-2">
+            <span>✈️</span> Flight Crew Rostering
+          </div>
+          <div class="p-2.5 bg-amber-50/60 rounded-xl border border-amber-100 flex items-center gap-2">
+            <span>🖥️</span> Compiler Register Allocation
+          </div>
+          <div class="p-2.5 bg-emerald-50/60 rounded-xl border border-emerald-100 flex items-center gap-2">
+            <span>🗺️</span> Map & Graph Coloring
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Victory Celebration Modal -->
+  <div id="victoryModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+    <div class="cute-card p-6 max-w-md w-full text-center space-y-4 shadow-2xl animate-bounce-once border-4 border-pink-300">
+      <div class="text-5xl animate-bounce">
+        👑🐱🎉
+      </div>
+      <h3 class="text-2xl font-bold text-pink-600 font-fun">
+        Purr-fect Solved!
+      </h3>
+      <p id="victoryDesc" class="text-sm text-gray-700 leading-relaxed">
+        All kitties have been placed in peaceful harmony with zero attacking lines! Every cat has their cozy personal space! 🐾
+      </p>
+      <div class="flex items-center justify-center gap-3 pt-2">
+        <button id="btnVictoryClose" class="cute-btn px-4 py-2 bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 text-xs font-bold">
+          Keep Admiring
+        </button>
+        <button id="btnVictoryNext" class="cute-btn px-5 py-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-xs font-bold shadow-md hover:scale-105">
+          Next Challenge (N+1) 🐾
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="max-w-6xl mx-auto px-4 mt-12 text-center text-xs text-pink-700/70">
+    <p>
+      Created with 💖 for AI & CSP learners • Powered by Web Audio API, HTML5 Canvas & Modern JavaScript
+    </p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/audio.js"></script>
+  <script src="js/fireworks.js"></script>
+  <script src="js/cats.js"></script>
+  <script src="js/csp-engine.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

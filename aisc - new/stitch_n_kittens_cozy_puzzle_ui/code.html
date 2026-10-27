@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cat-straints: N-Kittens Challenge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Quicksand"', '"Nunito"', 'sans-serif'],
+            display: ['"Nunito"', 'sans-serif'],
+          },
+          colors: {
+            cream: {
+              50: '#FFFDF9',
+              100: '#FFF9F0',
+              200: '#FFF2E0',
+            },
+            strawberry: {
+              50: '#FFF0F5',
+              100: '#FDE2EC',
+              200: '#FCC2D7',
+              300: '#FAA2C1',
+              400: '#F783AC',
+              500: '#F06595',
+            },
+            peach: {
+              100: '#FFE8D6',
+              200: '#FFD7BA',
+              300: '#FEC89A',
+            },
+            lavender: {
+              100: '#F3EEFF',
+              200: '#E5DBFF',
+              300: '#D0BFFF',
+              400: '#B197FC',
+            },
+            warmgray: {
+              700: '#4A4458',
+              800: '#383244',
+            }
+          },
+          boxShadow: {
+            'cozy': '0 8px 30px rgba(240, 101, 149, 0.12), 0 4px 12px rgba(254, 200, 154, 0.15)',
+            'cozy-sm': '0 4px 14px rgba(240, 101, 149, 0.08)',
+            'tile': '0 4px 12px rgba(245, 166, 178, 0.12)',
+            'glow-conflict': '0 0 20px rgba(244, 63, 94, 0.45), inset 0 0 10px rgba(244, 63, 94, 0.2)',
+            'glow-crown': '0 0 24px rgba(251, 191, 36, 0.6), 0 0 40px rgba(244, 114, 182, 0.4)',
+          },
+          animation: {
+            'bounce-soft': 'bounceSoft 1.8s infinite ease-in-out',
+            'float-cat': 'floatCat 3s infinite ease-in-out',
+            'shake-gentle': 'shakeGentle 0.4s ease-in-out',
+          },
+          keyframes: {
+            bounceSoft: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-6px)' },
+            },
+            floatCat: {
+              '0%, 100%': { transform: 'translateY(0) scale(1)' },
+              '50%': { transform: 'translateY(-4px) scale(1.02)' },
+            },
+            shakeGentle: {
+              '0%, 100%': { transform: 'translateX(0)' },
+              '20%, 60%': { transform: 'translateX(-4px)' },
+              '40%, 80%': { transform: 'translateX(4px)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background: radial-gradient(circle at 15% 15%, #FFF0F5 0%, #FFF9F0 45%, #F3EEFF 100%);
+      user-select: none;
+    }
+    .sparkle-particle {
+      position: absolute;
+      pointer-events: none;
+      animation: sparkleFloat 1.4s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+    }
+    @keyframes sparkleFloat {
+      0% { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 1; }
+      50% { opacity: 0.9; }
+      100% { transform: translate(var(--tx), var(--ty)) scale(1.3) rotate(180deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body class="min-h-screen text-warmgray-700 flex flex-col items-center justify-between p-4 md:p-6 antialiased selection:bg-strawberry-200">
+
+  <!-- Sparkle Particle Container -->
+  <div id="particle-container" class="fixed inset-0 pointer-events-none overflow-hidden z-50"></div>
+
+  <!-- Main Wrap -->
+  <div class="w-full max-w-3xl flex flex-col items-center gap-4 my-auto relative">
+
+    <!-- 1. Header Section -->
+    <header class="text-center flex flex-col items-center gap-1.5 w-full">
+      <!-- Title Badge -->
+      <div class="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-1.5 rounded-full border border-strawberry-200 shadow-cozy-sm mb-1">
+        <span class="text-2xl animate-bounce-soft inline-block">🐱</span>
+        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-strawberry-500 via-peach-300 to-lavender-400 bg-clip-text text-transparent font-display">
+          Cat-straints: N-Kittens Challenge
+        </h1>
+        <button id="btn-sound-toggle" onclick="toggleSound()" class="text-xs font-bold px-2 py-0.5 bg-lavender-100 hover:bg-lavender-200 text-lavender-400 rounded-full border border-lavender-200 transition-colors flex items-center gap-1 ml-1" title="Toggle cute sound effects">
+          <span id="sound-icon">🔊</span>
+          <span id="sound-text">Sound</span>
+        </button>
+      </div>
+      
+      <p class="text-xs md:text-sm text-warmgray-700/80 font-medium max-w-lg">
+        Place <span id="target-k-label" class="font-bold text-strawberry-500 bg-strawberry-100/70 px-2 py-0.5 rounded-md">8 cats</span> on the board so no two cats can see each other! (No row, column, or diagonal conflict)
+      </p>
+
+      <!-- Board Size Selector -->
+      <div class="flex items-center gap-2 mt-2 bg-white/70 backdrop-blur-sm p-1.5 rounded-full border border-strawberry-100 shadow-cozy-sm">
+        <span class="text-xs font-bold text-warmgray-700/70 pl-2.5 pr-1">Board Size:</span>
+        <button onclick="setBoardSize(4)" id="btn-size-4" class="size-btn px-3.5 py-1 text-xs md:text-sm font-bold rounded-full transition-all duration-200 text-warmgray-700 hover:bg-strawberry-100">4×4</button>
+        <button onclick="setBoardSize(6)" id="btn-size-6" class="size-btn px-3.5 py-1 text-xs md:text-sm font-bold rounded-full transition-all duration-200 text-warmgray-700 hover:bg-strawberry-100">6×6</button>
+        <button onclick="setBoardSize(8)" id="btn-size-8" class="size-btn px-3.5 py-1 text-xs md:text-sm font-bold rounded-full transition-all duration-200 bg-gradient-to-r from-strawberry-400 to-strawberry-500 text-white shadow-sm">8×8</button>
+      </div>
+    </header>
+
+    <!-- Victory Banner (Hidden by default, animates into view) -->
+    <div id="victory-banner" class="hidden w-full max-w-md transform transition-all duration-500 scale-95 opacity-0">
+      <div class="bg-gradient-to-r from-amber-100 via-strawberry-100 to-lavender-200 border-2 border-amber-300 rounded-3xl p-3.5 shadow-glow-crown flex items-center justify-between gap-3 text-center">
+        <div class="text-2xl animate-spin" style="animation-duration: 4s;">✨</div>
+        <div class="flex-1">
+          <h2 class="text-base md:text-lg font-extrabold text-warmgray-800 flex items-center justify-center gap-1.5 font-display">
+            <span>🎉 Purr-fect Harmony!</span>
+          </h2>
+          <p class="text-xs text-warmgray-700/90 font-bold">All Queens are crowned & sleeping in peace! 🐾</p>
+        </div>
+        <div class="text-2xl animate-spin" style="animation-duration: 4s; animation-direction: reverse;">✨</div>
+      </div>
+    </div>
+
+    <!-- 2. Main Play Area (Centerpiece Board) -->
+    <main class="relative flex flex-col items-center">
+      <!-- Board Container Outer Card -->
+      <div class="bg-white/90 backdrop-blur-md p-3 md:p-4 rounded-[2.5rem] border-4 border-white shadow-cozy flex flex-col items-center relative">
+        
+        <!-- Whimsical decorative paw prints -->
+        <span class="absolute -top-3 -left-3 text-xl opacity-40 rotate-[-20deg]">🐾</span>
+        <span class="absolute -bottom-3 -right-3 text-xl opacity-40 rotate-[25deg]">🐾</span>
+        <span class="absolute -top-3 -right-3 text-sm opacity-50">🌸</span>
+        <span class="absolute -bottom-3 -left-3 text-sm opacity-50">✨</span>
+
+        <!-- The Dynamic Board Grid -->
+        <div id="board" class="grid gap-1.5 md:gap-2 transition-all duration-300">
+          <!-- Tiles injected via JavaScript -->
+        </div>
+
+      </div>
+
+      <!-- Quick helper whisper -->
+      <div class="text-[11px] text-warmgray-700/60 font-semibold mt-2 flex items-center gap-1.5">
+        <span class="inline-block w-2 h-2 rounded-full bg-strawberry-400"></span>
+        Click any square to adopt or pick up a kitten
+      </div>
+    </main>
+
+    <!-- 3. Minimal Status & Controls -->
+    <footer class="w-full flex flex-col items-center gap-3">
+      <!-- Status Badges -->
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <!-- Cats Count -->
+        <div id="status-cats-badge" class="flex items-center gap-2 bg-white/85 backdrop-blur-sm px-4 py-2 rounded-2xl border border-strawberry-100 shadow-cozy-sm transition-all duration-200">
+          <span class="text-lg">🐾</span>
+          <span class="text-xs md:text-sm font-bold text-warmgray-700">Cats: <span id="cat-count" class="text-strawberry-500 font-extrabold text-base">0</span>/<span id="board-target-count" class="font-extrabold">8</span></span>
+        </div>
+
+        <!-- Conflicts Count -->
+        <div id="status-conflicts-badge" class="flex items-center gap-2 bg-white/85 backdrop-blur-sm px-4 py-2 rounded-2xl border border-strawberry-100 shadow-cozy-sm transition-all duration-200">
+          <span id="conflict-icon" class="text-lg">✨</span>
+          <span class="text-xs md:text-sm font-bold text-warmgray-700">Conflicts: <span id="conflict-count" class="font-extrabold text-base text-emerald-500">0</span></span>
+        </div>
+      </div>
+
+      <!-- Pill Action Buttons -->
+      <div class="flex flex-wrap items-center justify-center gap-2.5">
+        <!-- Clear Board -->
+        <button onclick="clearBoard()" class="group flex items-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-strawberry-50 active:scale-95 border border-strawberry-200 text-warmgray-700 font-bold text-xs md:text-sm shadow-cozy-sm transition-all duration-150">
+          <span class="group-hover:rotate-45 transition-transform duration-200">🧹</span>
+          <span>Clear Board</span>
+        </button>
+
+        <!-- Reset / Shuffle Hint -->
+        <button onclick="resetBoard()" class="group flex items-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-lavender-100 active:scale-95 border border-lavender-200 text-warmgray-700 font-bold text-xs md:text-sm shadow-cozy-sm transition-all duration-150">
+          <span class="group-hover:rotate-180 transition-transform duration-300">🔄</span>
+          <span>Reset</span>
+        </button>
+
+        <!-- Solve for Me 🪄 -->
+        <button onclick="solvePuzzleAnimated()" id="btn-solve" class="group flex items-center gap-1.5 px-5 py-2 rounded-full bg-gradient-to-r from-strawberry-400 via-strawberry-500 to-lavender-400 hover:from-strawberry-500 hover:to-lavender-500 text-white font-extrabold text-xs md:text-sm shadow-cozy active:scale-95 hover:shadow-lg transition-all duration-200">
+          <span class="group-hover:scale-125 transition-transform duration-200">🪄</span>
+          <span>Solve for Me</span>
+        </button>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Legend & Cozy Footer Note -->
+  <div class="mt-4 text-center text-xs text-warmgray-700/60 font-medium flex items-center justify-center gap-4">
+    <span class="flex items-center gap-1"><span>😸</span> Safe Kitty</span>
+    <span class="flex items-center gap-1"><span>😿</span> Alarmed Kitty (&gt;_&lt;)</span>
+    <span class="flex items-center gap-1"><span>👑</span> Queen of the Board</span>
+  </div>
+
+  <!-- Interactive Game Logic & Cute Web Audio -->
+  <script>
+    let N = 8;
+    // boardState[r][c] = boolean (true if kitten present)
+    let boardState = [];
+    let isSolved = false;
+    let isSolvingAnimation = false;
+
+    // Self-contained Cute Web Audio Synthesizer (Zero dependencies, offline)
+    const cuteAudio = {
+      ctx: null,
+      muted: false,
+      init() {
+        if (!this.ctx) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (AC) this.ctx = new AC();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      },
+      toggle() {
+        this.muted = !this.muted;
+        return !this.muted;
+      },
+      plop() {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(340, now);
+        osc.frequency.exponentialRampToValueAtTime(780, now + 0.08);
+        g.gain.setValueAtTime(0.14, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+        osc.connect(g);
+        g.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.11);
+      },
+      remove() {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(460, now);
+        osc.frequency.exponentialRampToValueAtTime(220, now + 0.08);
+        g.gain.setValueAtTime(0.12, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+        osc.connect(g);
+        g.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.1);
+      },
+      sparkle() {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const notes = [659.25, 880, 1046.5]; // E5, A5, C6
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const g = this.ctx.createGain();
+          const t = now + idx * 0.04;
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, t);
+          g.gain.setValueAtTime(0.06, t);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + 0.14);
+          osc.connect(g);
+          g.connect(this.ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.15);
+        });
+      },
+      victory() {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5]; // C5, E5, G5, C6, E6
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const g = this.ctx.createGain();
+          const t = now + idx * 0.08;
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, t);
+          g.gain.setValueAtTime(0.15, t);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+          osc.connect(g);
+          g.connect(this.ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.36);
+        });
+      }
+    };
+
+    function toggleSound() {
+      const isSoundOn = cuteAudio.toggle();
+      document.getElementById('sound-icon').innerText = isSoundOn ? '🔊' : '🔇';
+      document.getElementById('sound-text').innerText = isSoundOn ? 'Sound' : 'Muted';
+      if (isSoundOn) cuteAudio.sparkle();
+    }
+
+    function initBoard(size) {
+      N = size;
+      boardState = Array.from({ length: N }, () => Array(N).fill(false));
+      isSolved = false;
+
+      // Update Labels
+      document.getElementById('target-k-label').innerText = `${N} cats`;
+      document.getElementById('board-target-count').innerText = N;
+
+      // Update size pills
+      [4, 6, 8].forEach(sz => {
+        const btn = document.getElementById(`btn-size-${sz}`);
+        if (sz === N) {
+          btn.className = 'size-btn px-3.5 py-1 text-xs md:text-sm font-bold rounded-full transition-all duration-200 bg-gradient-to-r from-strawberry-400 to-strawberry-500 text-white shadow-sm';
+        } else {
+          btn.className = 'size-btn px-3.5 py-1 text-xs md:text-sm font-bold rounded-full transition-all duration-200 text-warmgray-700 hover:bg-strawberry-100';
+        }
+      });
+
+      updateGameStatus();
+      renderBoard();
+    }
+
+    function setBoardSize(size) {
+      if (isSolvingAnimation) return;
+      cuteAudio.plop();
+      initBoard(size);
+    }
+
+    function renderBoard() {
+      const boardEl = document.getElementById('board');
+      boardEl.innerHTML = '';
+      
+      // Dynamic grid template sizing based on N
+      boardEl.style.gridTemplateColumns = `repeat(${N}, minmax(0, 1fr))`;
+      
+      // Calculate responsive tile size
+      let tileSizeClass = 'w-10 h-10 md:w-12 md:h-12 text-2xl';
+      if (N === 4) {
+        tileSizeClass = 'w-16 h-16 md:w-20 md:h-20 text-4xl';
+      } else if (N === 6) {
+        tileSizeClass = 'w-12 h-12 md:w-16 md:h-16 text-3xl';
+      } else if (N === 8) {
+        tileSizeClass = 'w-10 h-10 md:w-13 md:h-13 text-2xl md:text-3xl';
+      }
+
+      // Check conflicts map
+      const { conflictSet } = calculateConflicts();
+
+      for (let r = 0; r < N; r++) {
+        for (let c = 0; c < N; c++) {
+          const hasCat = boardState[r][c];
+          const hasConflict = conflictSet.has(`${r},${c}`);
+          const isLightTile = (r + c) % 2 === 0;
+
+          const tileBtn = document.createElement('button');
+          tileBtn.dataset.row = r;
+          tileBtn.dataset.col = c;
+          tileBtn.onclick = () => onTileClick(r, c);
+
+          // Tile Base Theme (Cream and Soft Peach/Pink)
+          let bgClass = isLightTile 
+            ? 'bg-[#FFF8F0] hover:bg-[#FFF3E3] border-[#FFE6D0]' 
+            : 'bg-[#FFE8E8] hover:bg-[#FFDADA] border-[#FFCCD5]';
+          
+          let glowClass = 'border-2';
+          if (hasConflict) {
+            bgClass = 'bg-[#FFE2E2] border-rose-400';
+            glowClass = 'border-2 shadow-glow-conflict animate-shake-gentle';
+          } else if (isSolved && hasCat) {
+            bgClass = 'bg-gradient-to-br from-amber-50 to-pink-100 border-amber-300';
+            glowClass = 'border-2 shadow-glow-crown';
+          }
+
+          tileBtn.className = `${tileSizeClass} rounded-2xl md:rounded-3xl ${bgClass} ${glowClass} flex items-center justify-center relative transition-all duration-200 active:scale-90 group focus:outline-none`;
+
+          if (hasCat) {
+            const catContainer = document.createElement('div');
+            catContainer.className = 'relative flex items-center justify-center transition-all transform';
+
+            // Crown when solved!
+            if (isSolved) {
+              const crown = document.createElement('span');
+              crown.innerText = '👑';
+              crown.className = 'absolute -top-3 md:-top-4 text-xs md:text-sm animate-bounce';
+              crown.style.animationDuration = '1.2s';
+              catContainer.appendChild(crown);
+            }
+
+            // Cat Face depending on state
+            const catFace = document.createElement('span');
+            if (hasConflict) {
+              // Alarmed Kitty (>_<)
+              catFace.innerHTML = `
+                <div class="flex flex-col items-center justify-center">
+                  <span class="text-xl md:text-2xl filter drop-shadow">😿</span>
+                  <span class="text-[9px] md:text-[10px] font-black text-rose-500 tracking-tighter -mt-1">&gt;_&lt;</span>
+                </div>
+              `;
+            } else if (isSolved) {
+              // Royal peaceful queen cat
+              catFace.innerHTML = `
+                <div class="flex flex-col items-center justify-center animate-bounce-soft">
+                  <span class="text-2xl md:text-3xl filter drop-shadow">😸</span>
+                </div>
+              `;
+            } else {
+              // Peaceful Happy Kitty
+              catFace.innerHTML = `
+                <div class="flex flex-col items-center justify-center animate-float-cat">
+                  <span class="text-2xl md:text-3xl filter drop-shadow">😺</span>
+                </div>
+              `;
+            }
+
+            catContainer.appendChild(catFace);
+            tileBtn.appendChild(catContainer);
+          } else {
+            // Hover preview hint (tiny faint paw)
+            const hint = document.createElement('span');
+            hint.className = 'opacity-0 group-hover:opacity-30 text-sm md:text-base transition-opacity pointer-events-none';
+            hint.innerText = '🐾';
+            tileBtn.appendChild(hint);
+          }
+
+          boardEl.appendChild(tileBtn);
+        }
+      }
+    }
+
+    function onTileClick(r, c) {
+      if (isSolvingAnimation) return;
+      const willAddCat = !boardState[r][c];
+      boardState[r][c] = willAddCat;
+
+      if (willAddCat) {
+        cuteAudio.plop();
+      } else {
+        cuteAudio.remove();
+      }
+
+      updateGameStatus();
+      renderBoard();
+
+      // Trigger sparkle if placed successfully without conflicts
+      if (boardState[r][c]) {
+        const { conflictSet } = calculateConflicts();
+        if (!conflictSet.has(`${r},${c}`)) {
+          triggerTileSparkle(r, c);
+          cuteAudio.sparkle();
+        }
+      }
+    }
+
+    // Calculate all conflicting cat positions & conflict pairs
+    function calculateConflicts() {
+      const conflictSet = new Set();
+      const catPositions = [];
+      let conflictPairs = 0;
+
+      for (let r = 0; r < N; r++) {
+        for (let c = 0; c < N; c++) {
+          if (boardState[r][c]) {
+            catPositions.push({ r, c });
+          }
+        }
+      }
+
+      for (let i = 0; i < catPositions.length; i++) {
+        for (let j = i + 1; j < catPositions.length; j++) {
+          const a = catPositions[i];
+          const b = catPositions[j];
+
+          const sameRow = a.r === b.r;
+          const sameCol = a.c === b.c;
+          const sameDiag = Math.abs(a.r - b.r) === Math.abs(a.c - b.c);
+
+          if (sameRow || sameCol || sameDiag) {
+            conflictPairs++;
+            conflictSet.add(`${a.r},${a.c}`);
+            conflictSet.add(`${b.r},${b.c}`);
+          }
+        }
+      }
+
+      return { conflictSet, conflictPairs, totalCats: catPositions.length };
+    }
+
+    function updateGameStatus() {
+      const { conflictSet, conflictPairs, totalCats } = calculateConflicts();
+
+      // Update Cat Count UI
+      const catCountEl = document.getElementById('cat-count');
+      catCountEl.innerText = totalCats;
+
+      // Update Conflict UI
+      const conflictCountEl = document.getElementById('conflict-count');
+      const conflictIconEl = document.getElementById('conflict-icon');
+      const conflictBadge = document.getElementById('status-conflicts-badge');
+
+      if (conflictSet.size > 0) {
+        conflictCountEl.innerText = `${conflictPairs} ${conflictPairs === 1 ? 'pair' : 'pairs'}`;
+        conflictCountEl.className = 'font-extrabold text-base text-rose-500';
+        conflictIconEl.innerText = '⚠️';
+        conflictBadge.classList.add('border-rose-200', 'bg-rose-50/60');
+      } else {
+        conflictCountEl.innerText = '0';
+        conflictCountEl.className = 'font-extrabold text-base text-emerald-500';
+        conflictIconEl.innerText = '✨';
+        conflictBadge.classList.remove('border-rose-200', 'bg-rose-50/60');
+      }
+
+      // Check Victory Condition: Exactly N cats and 0 conflicts
+      const victoryBanner = document.getElementById('victory-banner');
+      if (totalCats === N && conflictSet.size === 0) {
+        if (!isSolved) {
+          isSolved = true;
+          // Trigger celebratory sparkles & audio fanfare
+          celebrateVictory();
+          cuteAudio.victory();
+        }
+        victoryBanner.classList.remove('hidden');
+        setTimeout(() => {
+          victoryBanner.classList.remove('scale-95', 'opacity-0');
+          victoryBanner.classList.add('scale-100', 'opacity-100');
+        }, 10);
+      } else {
+        isSolved = false;
+        victoryBanner.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+          if (!isSolved) victoryBanner.classList.add('hidden');
+        }, 300);
+      }
+    }
+
+    function clearBoard() {
+      if (isSolvingAnimation) return;
+      cuteAudio.remove();
+      boardState = Array.from({ length: N }, () => Array(N).fill(false));
+      isSolved = false;
+      updateGameStatus();
+      renderBoard();
+    }
+
+    function resetBoard() {
+      clearBoard();
+    }
+
+    // Sparkle Burst Animations
+    function triggerTileSparkle(r, c) {
+      const tileBtn = document.querySelector(`[data-row="${r}"][data-col="${c}"]`);
+      if (!tileBtn) return;
+      const rect = tileBtn.getBoundingClientRect();
+      const originX = rect.left + rect.width / 2;
+      const originY = rect.top + rect.height / 2;
+
+      for (let i = 0; i < 7; i++) {
+        createSparkle(originX, originY, false);
+      }
+    }
+
+    function celebrateVictory() {
+      for (let i = 0; i < 55; i++) {
+        setTimeout(() => {
+          const randX = window.innerWidth * 0.15 + Math.random() * window.innerWidth * 0.7;
+          const randY = window.innerHeight * 0.15 + Math.random() * window.innerHeight * 0.7;
+          createSparkle(randX, randY, true);
+        }, i * 22);
+      }
+    }
+
+    function createSparkle(x, y, isBig) {
+      const container = document.getElementById('particle-container');
+      const el = document.createElement('div');
+      el.className = 'sparkle-particle';
+      
+      const symbols = ['✨', '🌟', '💖', '🐾', '👑', '🌸'];
+      el.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+      
+      const angle = Math.random() * 2 * Math.PI;
+      const distance = isBig ? (40 + Math.random() * 150) : (20 + Math.random() * 65);
+      const tx = Math.cos(angle) * distance;
+      const ty = Math.sin(angle) * distance;
+      const size = isBig ? (14 + Math.random() * 20) : (11 + Math.random() * 11);
+
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+      el.style.fontSize = `${size}px`;
+      el.style.setProperty('--tx', `${tx}px`);
+      el.style.setProperty('--ty', `${ty}px`);
+
+      container.appendChild(el);
+      setTimeout(() => el.remove(), 1500);
+    }
+
+    // N-Queens Backtracking Solver (Randomized column order for diverse solutions)
+    function findNQueensSolution(size) {
+      const cols = new Set();
+      const diag1 = new Set(); // r - c
+      const diag2 = new Set(); // r + c
+      const solution = [];
+
+      function backtrack(row) {
+        if (row === size) return true;
+        
+        const candidateCols = Array.from({ length: size }, (_, i) => i).sort(() => Math.random() - 0.5);
+
+        for (const col of candidateCols) {
+          if (cols.has(col) || diag1.has(row - col) || diag2.has(row + col)) continue;
+
+          cols.add(col);
+          diag1.add(row - col);
+          diag2.add(row + col);
+          solution.push({ row, col });
+
+          if (backtrack(row + 1)) return true;
+
+          cols.delete(col);
+          diag1.delete(row - col);
+          diag2.delete(row + col);
+          solution.pop();
+        }
+        return false;
+      }
+
+      backtrack(0);
+      return solution;
+    }
+
+    function solvePuzzleAnimated() {
+      if (isSolvingAnimation) return;
+      isSolvingAnimation = true;
+      const solveBtn = document.getElementById('btn-solve');
+      solveBtn.disabled = true;
+      solveBtn.classList.add('opacity-70', 'cursor-not-allowed');
+
+      // Clear existing board
+      boardState = Array.from({ length: N }, () => Array(N).fill(false));
+      updateGameStatus();
+      renderBoard();
+
+      const solution = findNQueensSolution(N);
+      if (!solution || solution.length !== N) {
+        isSolvingAnimation = false;
+        solveBtn.disabled = false;
+        solveBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+        return;
+      }
+
+      // Step-by-step placement animation with cute sparkles
+      let step = 0;
+      const interval = setInterval(() => {
+        if (step < solution.length) {
+          const { row, col } = solution[step];
+          boardState[row][col] = true;
+          triggerTileSparkle(row, col);
+          cuteAudio.plop();
+          updateGameStatus();
+          renderBoard();
+          step++;
+        } else {
+          clearInterval(interval);
+          isSolvingAnimation = false;
+          solveBtn.disabled = false;
+          solveBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+          celebrateVictory();
+          cuteAudio.victory();
+          updateGameStatus();
+          renderBoard();
+        }
+      }, 160);
+    }
+
+    // Initialize board on launch (Default: 8x8)
+    window.addEventListener('DOMContentLoaded', () => {
+      initBoard(8);
+    });
+  </script>
+</body>
+</html>
