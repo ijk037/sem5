@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🐱 Cat-straints: N-Kittens Challenge | Cozy AI Puzzle</title>
-  <meta name="description" content="A cute, cozy N-Queens puzzle with adorable kittens, smart hints, conflict animations, sparkle bursts, and an animated AI solver.">
+  <title>🐱 Cat-straints: N-Kittens Challenge | CSP Backtracking & Forward Checking</title>
+  <meta name="description" content="An interactive, cute N-Queens CSP solver powered by Backtracking Search and Forward Checking Constraint Propagation.">
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -106,9 +106,20 @@
     .cat-avatar-svg:hover {
       transform: scale(1.08);
     }
+    .attacked-eliminated-tile {
+      background-color: rgba(254, 205, 211, 0.35) !important;
+      position: relative;
+    }
+    .attacked-eliminated-tile::after {
+      content: '·';
+      position: absolute;
+      color: rgba(244, 63, 94, 0.45);
+      font-size: 1.5rem;
+      pointer-events: none;
+    }
     .sight-line-highlight {
-      background-color: rgba(254, 205, 211, 0.45) !important;
-      outline: 2px dashed rgba(244, 63, 94, 0.45);
+      background-color: rgba(254, 205, 211, 0.6) !important;
+      outline: 2px dashed rgba(244, 63, 94, 0.5);
       outline-offset: -2px;
     }
   </style>
@@ -119,7 +130,7 @@
   <div id="particle-container" class="fixed inset-0 pointer-events-none overflow-hidden z-50"></div>
 
   <!-- Main Wrap -->
-  <div class="w-full max-w-2xl flex flex-col items-center gap-3.5 my-auto relative">
+  <div class="w-full max-w-2xl flex flex-col items-center gap-3 my-auto relative">
 
     <!-- 1. Header Section -->
     <header class="text-center flex flex-col items-center gap-1.5 w-full">
@@ -136,19 +147,26 @@
       </div>
       
       <p class="text-xs md:text-sm text-warmgray-700/80 font-medium max-w-md text-center">
-        Place <span id="target-k-label" class="font-bold text-strawberry-500 bg-strawberry-100/70 px-2 py-0.5 rounded-md">8 cats</span> so no two cats can see each other along any row, column, or diagonal!
+        Assign one kitten per row $Q_i \in \{1 \dots N\}$ with zero column or diagonal attacks (CSP Forward Checking).
       </p>
 
-      <!-- Board Size Selector -->
-      <div class="flex items-center gap-2 mt-1 bg-white/70 backdrop-blur-sm p-1.5 rounded-full border border-strawberry-100 shadow-cozy-sm">
-        <span class="text-xs font-bold text-warmgray-700/70 pl-2.5 pr-1">Board Size:</span>
-        <button onclick="setBoardSize(4)" id="btn-size-4" class="size-btn px-3 py-1 text-xs md:text-sm font-bold rounded-full transition-all duration-200 text-warmgray-700 hover:bg-strawberry-100">4×4</button>
-        <button onclick="setBoardSize(6)" id="btn-size-6" class="size-btn px-3 py-1 text-xs md:text-sm font-bold rounded-full transition-all duration-200 text-warmgray-700 hover:bg-strawberry-100">6×6</button>
-        <button onclick="setBoardSize(8)" id="btn-size-8" class="size-btn px-3 py-1 text-xs md:text-sm font-bold rounded-full transition-all duration-200 bg-gradient-to-r from-strawberry-400 to-strawberry-500 text-white shadow-sm">8×8</button>
+      <!-- Board Size Selector & Domain Toggle -->
+      <div class="flex items-center gap-2 mt-1 flex-wrap justify-center">
+        <div class="flex items-center gap-1.5 bg-white/70 backdrop-blur-sm p-1 rounded-full border border-strawberry-100 shadow-cozy-sm">
+          <span class="text-xs font-bold text-warmgray-700/70 pl-2 pr-1">Size:</span>
+          <button onclick="setBoardSize(4)" id="btn-size-4" class="size-btn px-3 py-1 text-xs md:text-sm font-bold rounded-full transition-all duration-200 text-warmgray-700 hover:bg-strawberry-100">4×4</button>
+          <button onclick="setBoardSize(6)" id="btn-size-6" class="size-btn px-3 py-1 text-xs md:text-sm font-bold rounded-full transition-all duration-200 text-warmgray-700 hover:bg-strawberry-100">6×6</button>
+          <button onclick="setBoardSize(8)" id="btn-size-8" class="size-btn px-3 py-1 text-xs md:text-sm font-bold rounded-full transition-all duration-200 bg-gradient-to-r from-strawberry-400 to-strawberry-500 text-white shadow-sm">8×8</button>
+        </div>
+
+        <button onclick="toggleDomainVisibility()" id="btn-toggle-domains" class="text-xs font-bold px-3 py-1 bg-white/80 hover:bg-strawberry-50 text-strawberry-500 border border-strawberry-200 rounded-full shadow-cozy-sm transition-all flex items-center gap-1">
+          <span id="domain-eye">👁️</span>
+          <span>Forward Checking</span>
+        </button>
       </div>
     </header>
 
-    <!-- Toast Notification / Friendly Helper Message -->
+    <!-- Toast Notification / CSP Status Message -->
     <div id="toast-message" class="hidden transition-all duration-300 transform -translate-y-2 opacity-0 px-3.5 py-1.5 rounded-full text-xs font-bold shadow-cozy-sm flex items-center gap-1.5">
       <span id="toast-icon">💡</span>
       <span id="toast-text">Tip message</span>
@@ -162,7 +180,7 @@
           <h2 class="text-sm md:text-base font-extrabold text-warmgray-800 flex items-center justify-center gap-1.5 font-display">
             <span>🎉 Purr-fect Harmony!</span>
           </h2>
-          <p class="text-[11px] md:text-xs text-warmgray-700/90 font-bold">All <span id="victory-n-label">8</span> Queens are crowned & sleeping in peace! 🐾</p>
+          <p class="text-[11px] md:text-xs text-warmgray-700/90 font-bold">All <span id="victory-n-label">8</span> Queens crowned with 0 constraint conflicts! 🐾</p>
           <div class="mt-2 flex items-center justify-center gap-2">
             <button onclick="playNextLevel()" id="btn-next-level" class="px-3 py-1 bg-white hover:bg-amber-50 text-amber-700 font-extrabold text-[11px] rounded-full shadow-sm border border-amber-200 active:scale-95 transition-all">
               Next Level 🐾
@@ -179,7 +197,7 @@
     <!-- 2. Main Play Area (Centerpiece Board) -->
     <main class="relative flex flex-col items-center w-full">
       <!-- Board Container Outer Card -->
-      <div class="bg-white/90 backdrop-blur-md p-2.5 md:p-3.5 rounded-[2rem] border-4 border-white shadow-cozy flex flex-col items-center relative max-w-full">
+      <div class="bg-white/90 backdrop-blur-md p-2.5 md:p-3 rounded-[2rem] border-4 border-white shadow-cozy flex flex-col items-center relative max-w-full">
         
         <!-- Whimsical decorative paw prints -->
         <span class="absolute -top-3 -left-3 text-lg opacity-40 rotate-[-20deg] pointer-events-none">🐾</span>
@@ -195,45 +213,51 @@
       </div>
 
       <!-- Quick helper whisper -->
-      <div class="text-[11px] text-warmgray-700/60 font-semibold mt-1.5 flex items-center gap-1.5">
+      <div class="text-[11px] text-warmgray-700/60 font-semibold mt-1 flex items-center gap-1.5">
         <span class="inline-block w-2 h-2 rounded-full bg-strawberry-400"></span>
-        Click any square to adopt or pick up a kitten • Hover over a cat to see its sightlines
+        Click any row to place or move its kitten • Hover over a cat to see its attacked lines
       </div>
     </main>
 
-    <!-- 3. Minimal Status & Controls -->
-    <footer class="w-full flex flex-col items-center gap-2.5">
+    <!-- 3. Status & Controls -->
+    <footer class="w-full flex flex-col items-center gap-2">
       <!-- Status Badges -->
-      <div class="flex flex-wrap items-center justify-center gap-2.5">
+      <div class="flex flex-wrap items-center justify-center gap-2">
         <!-- Cats Count -->
-        <div id="status-cats-badge" class="flex items-center gap-2 bg-white/85 backdrop-blur-sm px-3.5 py-1.5 rounded-2xl border border-strawberry-100 shadow-cozy-sm transition-all duration-200">
-          <span class="text-base">🐾</span>
-          <span class="text-xs md:text-sm font-bold text-warmgray-700">Cats: <span id="cat-count" class="text-strawberry-500 font-extrabold text-sm md:text-base">0</span>/<span id="board-target-count" class="font-extrabold">8</span></span>
+        <div id="status-cats-badge" class="flex items-center gap-1.5 bg-white/85 backdrop-blur-sm px-3 py-1 rounded-2xl border border-strawberry-100 shadow-cozy-sm transition-all duration-200">
+          <span class="text-sm">🐾</span>
+          <span class="text-xs font-bold text-warmgray-700">Assigned: <span id="cat-count" class="text-strawberry-500 font-extrabold text-sm">0</span>/<span id="board-target-count" class="font-extrabold">8</span></span>
         </div>
 
         <!-- Conflicts Count -->
-        <div id="status-conflicts-badge" class="flex items-center gap-2 bg-white/85 backdrop-blur-sm px-3.5 py-1.5 rounded-2xl border border-strawberry-100 shadow-cozy-sm transition-all duration-200">
-          <span id="conflict-icon" class="text-base">✨</span>
-          <span class="text-xs md:text-sm font-bold text-warmgray-700">Conflicts: <span id="conflict-count" class="font-extrabold text-sm md:text-base text-emerald-500">0</span></span>
+        <div id="status-conflicts-badge" class="flex items-center gap-1.5 bg-white/85 backdrop-blur-sm px-3 py-1 rounded-2xl border border-strawberry-100 shadow-cozy-sm transition-all duration-200">
+          <span id="conflict-icon" class="text-sm">✨</span>
+          <span class="text-xs font-bold text-warmgray-700">Conflicts: <span id="conflict-count" class="font-extrabold text-sm text-emerald-500">0</span></span>
+        </div>
+
+        <!-- Domain Wipeout Warning Pill -->
+        <div id="status-wipeout-badge" class="hidden flex items-center gap-1.5 bg-rose-50 px-3 py-1 rounded-2xl border border-rose-200 shadow-cozy-sm text-rose-600 font-bold text-xs animate-shake-gentle">
+          <span>⚠️</span>
+          <span id="wipeout-text">Domain wipeout</span>
         </div>
       </div>
 
-      <!-- Pill Action Buttons -->
+      <!-- Action Buttons -->
       <div class="flex flex-wrap items-center justify-center gap-2">
         <!-- Undo Button -->
-        <button onclick="undoMove()" id="btn-undo" class="group flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white hover:bg-strawberry-50 active:scale-95 border border-strawberry-200 text-warmgray-700 font-bold text-xs shadow-cozy-sm transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
+        <button onclick="undoMove()" id="btn-undo" class="group flex items-center gap-1 px-3 py-1.5 rounded-full bg-white hover:bg-strawberry-50 active:scale-95 border border-strawberry-200 text-warmgray-700 font-bold text-xs shadow-cozy-sm transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
           <span class="group-hover:-rotate-45 transition-transform duration-200">↩️</span>
           <span>Undo</span>
         </button>
 
-        <!-- Smart Hint Button -->
-        <button onclick="giveSmartHint()" id="btn-hint" class="group flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white hover:bg-lavender-50 active:scale-95 border border-lavender-200 text-lavender-500 font-extrabold text-xs shadow-cozy-sm transition-all duration-150">
+        <!-- Smart CSP Hint Button -->
+        <button onclick="giveSmartHint()" id="btn-hint" class="group flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-white hover:bg-lavender-50 active:scale-95 border border-lavender-200 text-purple-600 font-extrabold text-xs shadow-cozy-sm transition-all duration-150">
           <span class="group-hover:scale-125 transition-transform duration-200">💡</span>
-          <span>Hint</span>
+          <span>CSP Hint</span>
         </button>
 
         <!-- Clear Board -->
-        <button onclick="clearBoard()" class="group flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white hover:bg-strawberry-50 active:scale-95 border border-strawberry-200 text-warmgray-700 font-bold text-xs shadow-cozy-sm transition-all duration-150">
+        <button id="btn-clear" onclick="clearBoard()" class="group flex items-center gap-1 px-3 py-1.5 rounded-full bg-white hover:bg-strawberry-50 active:scale-95 border border-strawberry-200 text-warmgray-700 font-bold text-xs shadow-cozy-sm transition-all duration-150">
           <span class="group-hover:rotate-45 transition-transform duration-200">🧹</span>
           <span>Clear</span>
         </button>
@@ -248,24 +272,27 @@
 
   </div>
 
-  <!-- Legend & Cozy Footer Note -->
-  <div class="mt-3 text-center text-xs text-warmgray-700/60 font-medium flex items-center justify-center gap-3.5 flex-wrap">
+  <!-- Legend -->
+  <div class="mt-2 text-center text-[11px] text-warmgray-700/60 font-medium flex items-center justify-center gap-3 flex-wrap">
     <span class="flex items-center gap-1"><span>😸</span> Safe Kitty</span>
     <span class="flex items-center gap-1"><span>😾</span> Alarmed Kitty (&gt;_&lt;)</span>
     <span class="flex items-center gap-1"><span>👑</span> Queen Kitty</span>
+    <span class="flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded bg-rose-200 border border-rose-300"></span> Eliminated Domain</span>
   </div>
 
-  <!-- Repaired, Comprehensive Game Engine & Audio -->
+  <!-- Rigorous CSP Engine: Variables, Domains, Constraints, Forward Checking & Backtracking -->
   <script>
     let N = 8;
-    // boardState[r][c] = boolean
-    let boardState = [];
+    // boardAssignments[r] = column index (0..N-1) or -1 if unassigned
+    // Strictly models CSP: Variable Q_r in row r has domain D(Q_r) in {0..N-1}
+    let boardAssignments = [];
     let isSolved = false;
     let isSolvingAnimation = false;
     let solverInterval = null;
-    let moveHistory = []; // Stack of {r, c, wasAdded}
+    let moveHistory = []; // Stack of {r, oldCol, newCol}
+    let showDomains = true;
 
-    // Handcrafted cute SVG Kitten Avatars with 4 pastel breeds & reactive expressions
+    // SVG Kittens across 4 breeds with dynamic reactive expressions
     const KittyAvatars = {
       breeds: [
         { fur: '#FAB1A0', patch: '#E17055', ear: '#FF7675', eye: '#2D3436' }, // Peach Tabby
@@ -274,7 +301,7 @@
         { fur: '#FFD2DC', patch: '#FF88A5', ear: '#FFAAB9', eye: '#6C5CE7' }, // Strawberry Pink
       ],
 
-      getSvg(r, c, state = 'happy', size = 38) {
+      getSvg(r, c, state = 'happy', size = 36) {
         const breed = this.breeds[(r * 2 + c) % this.breeds.length];
         
         let eyesSvg = '';
@@ -282,32 +309,28 @@
         let accentsSvg = '';
 
         if (state === 'conflict') {
-          // Alarmed / Angry squinty eyes (>_<)
+          // Alarmed / Squinty eyes (>_<)
           eyesSvg = `
             <path d="M 11 17 L 14 19 L 11 21" fill="none" stroke="#E11D48" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
             <path d="M 21 17 L 18 19 L 21 21" fill="none" stroke="#E11D48" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
           `;
           mouthSvg = `<path d="M 14 24 Q 16 22 18 24" fill="none" stroke="#E11D48" stroke-width="1.4" stroke-linecap="round" />`;
-          accentsSvg = `
-            <!-- Anger vein / sweat -->
-            <path d="M 23 8 L 26 10 M 26 8 L 23 10" stroke="#E11D48" stroke-width="1.2" stroke-linecap="round" />
-          `;
+          accentsSvg = `<path d="M 23 8 L 26 10 M 26 8 L 23 10" stroke="#E11D48" stroke-width="1.2" stroke-linecap="round" />`;
         } else if (state === 'crowned') {
-          // Solved happy closed eyes (^_^) and royal crown!
+          // Solved happy closed eyes (^_^) and royal golden crown!
           eyesSvg = `
             <path d="M 10 19 Q 13 16 16 19" fill="none" stroke="#2D3436" stroke-width="1.6" stroke-linecap="round" />
             <path d="M 16 19 Q 19 16 22 19" fill="none" stroke="#2D3436" stroke-width="1.6" stroke-linecap="round" />
           `;
           mouthSvg = `<path d="M 14 23 Q 16 25 18 23" fill="none" stroke="#2D3436" stroke-width="1.3" stroke-linecap="round" />`;
           accentsSvg = `
-            <!-- Royal Crown -->
             <path d="M 11 8 L 12.5 12 L 16 9 L 19.5 12 L 21 8 L 20 14 L 12 14 Z" fill="#FBBF24" stroke="#D97706" stroke-width="0.8" stroke-linejoin="round"/>
             <circle cx="16" cy="7.5" r="1.2" fill="#EF4444" />
             <circle cx="11" cy="7.5" r="0.9" fill="#8B5CF6" />
             <circle cx="21" cy="7.5" r="0.9" fill="#10B981" />
           `;
         } else {
-          // Peaceful Happy Kitty with sweet sparkling eyes
+          // Peaceful Happy Kitty with sparkling eyes
           eyesSvg = `
             <ellipse cx="12" cy="18" rx="1.8" ry="2.2" fill="${breed.eye}" />
             <circle cx="12.7" cy="17.2" r="0.7" fill="#FFFFFF" />
@@ -343,7 +366,6 @@
             <!-- Nose -->
             <polygon points="15.2,21 16.8,21 16,22" fill="#FF7675" />
 
-            <!-- Eyes & Mouth -->
             ${eyesSvg}
             ${mouthSvg}
             ${accentsSvg}
@@ -352,7 +374,7 @@
       }
     };
 
-    // Self-contained Cute Web Audio Synthesizer (Zero dependencies, offline)
+    // Web Audio Synthesizer
     const cuteAudio = {
       ctx: null,
       muted: false,
@@ -469,6 +491,14 @@
       if (isSoundOn) cuteAudio.sparkle();
     }
 
+    function toggleDomainVisibility() {
+      showDomains = !showDomains;
+      const eye = document.getElementById('domain-eye');
+      if (eye) eye.innerText = showDomains ? '👁️' : '🙈';
+      renderBoard();
+      showToast(showDomains ? 'Forward Checking domains visible' : 'Domains hidden', 'info', '👁️');
+    }
+
     function showToast(message, type = 'info', icon = '💡') {
       const toast = document.getElementById('toast-message');
       const toastText = document.getElementById('toast-text');
@@ -488,21 +518,231 @@
       toast._timer = setTimeout(() => {
         toast.classList.add('opacity-0', '-translate-y-2');
         setTimeout(() => toast.classList.add('hidden'), 300);
-      }, 3200);
+      }, 3500);
     }
+
+    // --- FORMAL CSP ENGINE IMPLEMENTATION ---
+
+    // 1. Conflict Evaluation
+    function evaluateBoard(board) {
+      const conflictSet = new Set();
+      let colConflicts = 0;
+      let diagConflicts = 0;
+
+      const placed = [];
+      for (let r = 0; r < N; r++) {
+        if (board[r] !== -1) {
+          placed.push({ r, c: board[r] });
+        }
+      }
+
+      for (let i = 0; i < placed.length; i++) {
+        for (let j = i + 1; j < placed.length; j++) {
+          const a = placed[i];
+          const b = placed[j];
+
+          const sameCol = a.c === b.c;
+          const sameDiag = Math.abs(a.r - b.r) === Math.abs(a.c - b.c);
+
+          if (sameCol) {
+            colConflicts++;
+            conflictSet.add(`${a.r},${a.c}`);
+            conflictSet.add(`${b.r},${b.c}`);
+          } else if (sameDiag) {
+            diagConflicts++;
+            conflictSet.add(`${a.r},${a.c}`);
+            conflictSet.add(`${b.r},${b.c}`);
+          }
+        }
+      }
+
+      const totalConflicts = colConflicts + diagConflicts;
+      const isSolved = placed.length === N && totalConflicts === 0;
+
+      return {
+        placedCount: placed.length,
+        colConflicts,
+        diagConflicts,
+        totalConflicts,
+        conflictSet,
+        isSolved
+      };
+    }
+
+    // 2. Forward Checking Constraint Propagation: computes legal domains D(Qi) for each row i
+    function computeCSPDomains(board) {
+      const domains = Array.from({ length: N }, () => new Set(Array.from({ length: N }, (_, i) => i)));
+      const eliminatedSquares = new Set();
+
+      for (let r = 0; r < N; r++) {
+        const c = board[r];
+        if (c === -1) continue;
+
+        domains[r] = new Set([c]);
+
+        // Propagate constraints to all other rows j != r
+        for (let j = 0; j < N; j++) {
+          if (j === r) continue;
+          // Same column
+          domains[j].delete(c);
+          eliminatedSquares.add(`${j},${c}`);
+
+          // Diagonals
+          const d = Math.abs(j - r);
+          if (c - d >= 0) {
+            domains[j].delete(c - d);
+            eliminatedSquares.add(`${j},${c - d}`);
+          }
+          if (c + d < N) {
+            domains[j].delete(c + d);
+            eliminatedSquares.add(`${j},${c + d}`);
+          }
+        }
+      }
+
+      const emptyDomainRows = [];
+      for (let r = 0; r < N; r++) {
+        if (board[r] === -1 && domains[r].size === 0) {
+          emptyDomainRows.push(r);
+        }
+      }
+
+      return { domains, eliminatedSquares, emptyDomainRows };
+    }
+
+    // 3. Systematic Backtracking Search with Forward Checking
+    function solveCSP(board) {
+      const working = [...board];
+
+      // If initial board already has direct conflicts, no valid extension
+      const ev = evaluateBoard(working);
+      if (ev.totalConflicts > 0) return null;
+
+      // If any unassigned row has empty domain, initial fails forward checking
+      const fcInit = computeCSPDomains(working);
+      if (fcInit.emptyDomainRows.length > 0) return null;
+
+      const backtrack = (r) => {
+        if (r === N) return true;
+        if (working[r] !== -1) {
+          return backtrack(r + 1);
+        }
+
+        const { domains } = computeCSPDomains(working);
+        const candidates = Array.from(domains[r]);
+
+        for (const col of candidates) {
+          working[r] = col;
+          const fc = computeCSPDomains(working);
+          if (fc.emptyDomainRows.length === 0) {
+            if (backtrack(r + 1)) return true;
+          }
+          working[r] = -1;
+        }
+        return false;
+      };
+
+      if (backtrack(0)) {
+        return working;
+      }
+      return null;
+    }
+
+    // 4. Smart Hint Engine (Honors Forward Checking & Backtracking)
+    function computeSmartHint(board, history) {
+      const ev = evaluateBoard(board);
+
+      if (ev.isSolved) {
+        return { type: 'solved', message: 'Puzzle is already completely solved! 👑' };
+      }
+
+      // If there are direct conflicts on the board, guide the user to fix the conflicting row
+      if (ev.totalConflicts > 0) {
+        const msg = ev.colConflicts > 0
+          ? 'Two kitties are in the same column! Move one to a safe column.'
+          : 'Two kitties attack diagonally! Move the alarmed kitty.';
+        return { type: 'conflict', message: msg };
+      }
+
+      // Check if current board can be extended via Forward Checking
+      const solution = solveCSP(board);
+
+      if (solution) {
+        // Forward Checking success: assign the next unassigned variable row
+        for (let r = 0; r < N; r++) {
+          if (board[r] === -1) {
+            return {
+              type: 'assign',
+              row: r,
+              col: solution[r],
+              message: `Forward Checking: Assigned Q${r + 1} at Row ${r + 1}, Col ${solution[r] + 1} 🐾`
+            };
+          }
+        }
+      }
+
+      // If no solution exists, current state is a Dead End (Forward Checking failure)!
+      // Backtracking: backtrack the latest placed queen to its next valid value in its domain
+      const testBoard = [...board];
+      let rowToBacktrack = -1;
+
+      // Find the most recent assigned row from history
+      for (let i = history.length - 1; i >= 0; i--) {
+        const mv = history[i];
+        if (testBoard[mv.r] === mv.newCol) {
+          rowToBacktrack = mv.r;
+          break;
+        }
+      }
+      if (rowToBacktrack === -1) {
+        for (let r = N - 1; r >= 0; r--) {
+          if (testBoard[r] !== -1) {
+            rowToBacktrack = r;
+            break;
+          }
+        }
+      }
+
+      if (rowToBacktrack !== -1) {
+        testBoard[rowToBacktrack] = -1;
+        const fixSolution = solveCSP(testBoard);
+        if (fixSolution) {
+          return {
+            type: 'backtrack',
+            row: rowToBacktrack,
+            oldCol: board[rowToBacktrack],
+            newCol: fixSolution[rowToBacktrack],
+            message: `Backtracking: Row ${rowToBacktrack + 1} caused a domain wipeout. Moved it to legal Col ${fixSolution[rowToBacktrack] + 1}! 🐾`
+          };
+        }
+      }
+
+      // Full reset suggestion
+      const freshSol = solveCSP(new Array(N).fill(-1));
+      return {
+        type: 'reset_assign',
+        solution: freshSol,
+        message: 'Backtracking to a valid assignment path 🪄'
+      };
+    }
+
+    // --- UI CONTROLLER & EVENT HANDLERS ---
 
     function initBoard(size) {
       stopSolvingAnimation();
       N = size;
-      boardState = Array.from({ length: N }, () => Array(N).fill(false));
+      boardAssignments = new Array(N).fill(-1);
       isSolved = false;
       moveHistory = [];
       updateUndoButton();
 
       // Update Labels
-      document.getElementById('target-k-label').innerText = `${N} cats`;
-      document.getElementById('board-target-count').innerText = N;
-      document.getElementById('victory-n-label').innerText = N;
+      const targetK = document.getElementById('target-k-label');
+      if (targetK) targetK.innerText = `${N} cats`;
+      const boardTarget = document.getElementById('board-target-count');
+      if (boardTarget) boardTarget.innerText = N;
+      const victoryN = document.getElementById('victory-n-label');
+      if (victoryN) victoryN.innerText = N;
 
       // Update size pills
       [4, 6, 8].forEach(sz => {
@@ -516,7 +756,6 @@
         }
       });
 
-      // Update next level button label
       const nextBtn = document.getElementById('btn-next-level');
       if (nextBtn) {
         if (N === 4) nextBtn.innerText = 'Try 6×6 🐾';
@@ -543,40 +782,6 @@
       initBoard(size);
     }
 
-    // Accurate CSP conflict calculation (Returns attacked cells set, pairs count, and list of cats)
-    function calculateConflicts() {
-      const conflictSet = new Set();
-      const catPositions = [];
-      let conflictPairs = 0;
-
-      for (let r = 0; r < N; r++) {
-        for (let c = 0; c < N; c++) {
-          if (boardState[r][c]) {
-            catPositions.push({ r, c });
-          }
-        }
-      }
-
-      for (let i = 0; i < catPositions.length; i++) {
-        for (let j = i + 1; j < catPositions.length; j++) {
-          const a = catPositions[i];
-          const b = catPositions[j];
-
-          const sameRow = a.r === b.r;
-          const sameCol = a.c === b.c;
-          const sameDiag = Math.abs(a.r - b.r) === Math.abs(a.c - b.c);
-
-          if (sameRow || sameCol || sameDiag) {
-            conflictPairs++;
-            conflictSet.add(`${a.r},${a.c}`);
-            conflictSet.add(`${b.r},${b.c}`);
-          }
-        }
-      }
-
-      return { conflictSet, conflictPairs, totalCats: catPositions.length, catPositions };
-    }
-
     // Highlight sightlines without destroying DOM elements
     function highlightSightLines(hr, hc) {
       document.querySelectorAll('#board button').forEach(btn => {
@@ -600,10 +805,10 @@
     function renderBoard() {
       const boardEl = document.getElementById('board');
       boardEl.innerHTML = '';
-      
       boardEl.style.gridTemplateColumns = `repeat(${N}, minmax(0, 1fr))`;
-      
-      const { conflictSet } = calculateConflicts();
+
+      const ev = evaluateBoard(boardAssignments);
+      const { domains, eliminatedSquares } = computeCSPDomains(boardAssignments);
 
       // Responsive tile dimensions
       const tileDim = N === 4 ? 'w-14 h-14 md:w-20 md:h-20' : N === 6 ? 'w-11 h-11 md:w-15 md:h-15' : 'w-9 h-9 md:w-12 md:h-12';
@@ -612,8 +817,9 @@
       for (let r = 0; r < N; r++) {
         for (let c = 0; c < N; c++) {
           const cellKey = `${r},${c}`;
-          const hasCat = boardState[r][c];
-          const hasConflict = conflictSet.has(cellKey);
+          const hasCat = boardAssignments[r] === c;
+          const hasConflict = ev.conflictSet.has(cellKey);
+          const isEliminated = showDomains && boardAssignments[r] === -1 && !domains[r].has(c);
           const isLightTile = (r + c) % 2 === 0;
 
           const tileBtn = document.createElement('button');
@@ -621,9 +827,9 @@
           tileBtn.dataset.col = c;
           tileBtn.onclick = () => onTileClick(r, c);
 
-          // Sightline preview on hover (pure CSS class toggle, no DOM detachment)
+          // Pure CSS hover sightline preview
           tileBtn.onmouseenter = () => {
-            if (boardState[r][c]) highlightSightLines(r, c);
+            if (boardAssignments[r] === c) highlightSightLines(r, c);
           };
           tileBtn.onmouseleave = () => {
             clearSightLines();
@@ -641,6 +847,8 @@
           } else if (isSolved && hasCat) {
             bgClass = 'bg-gradient-to-br from-amber-50 to-pink-100 border-amber-300';
             glowClass = 'border-2 shadow-glow-crown';
+          } else if (isEliminated) {
+            bgClass = 'attacked-eliminated-tile border-rose-100';
           }
 
           tileBtn.className = `${tileDim} rounded-2xl md:rounded-3xl ${bgClass} ${glowClass} flex items-center justify-center relative transition-all duration-150 active:scale-95 group focus:outline-none`;
@@ -653,10 +861,9 @@
             catWrapper.innerHTML = KittyAvatars.getSvg(r, c, state, catSize);
             tileBtn.appendChild(catWrapper);
           } else {
-            // Hover preview hint (tiny faint paw)
             const hint = document.createElement('span');
             hint.className = 'opacity-0 group-hover:opacity-30 text-xs md:text-sm transition-opacity pointer-events-none select-none';
-            hint.innerText = '🐾';
+            hint.innerText = isEliminated ? '·' : '🐾';
             tileBtn.appendChild(hint);
           }
 
@@ -668,38 +875,30 @@
     function onTileClick(r, c) {
       if (isSolvingAnimation) return;
 
-      const isCurrentlyPlaced = boardState[r][c];
-      const { totalCats } = calculateConflicts();
+      const oldCol = boardAssignments[r];
+      let newCol = -1;
 
-      // Logical Bug Fix: Enforce N-Queens limit (cannot place > N cats)
-      if (!isCurrentlyPlaced && totalCats >= N) {
-        cuteAudio.buzz();
-        showToast(`You already have all ${N} cats placed! Move or remove one first 🐾`, 'error', '⚠️');
-        return;
-      }
-
-      // Toggle cat
-      const willAddCat = !isCurrentlyPlaced;
-      boardState[r][c] = willAddCat;
-
-      // Track move for Undo
-      moveHistory.push({ r, c, wasAdded: willAddCat });
-      updateUndoButton();
-
-      if (willAddCat) {
-        cuteAudio.plop();
-      } else {
+      // CSP Variable assignment: Clicking the same cat picks it up (unassigns); clicking another column sets Q_r = c
+      if (oldCol === c) {
+        newCol = -1; // Unassign row r
         cuteAudio.remove();
+      } else {
+        newCol = c;  // Assign Q_r = c
+        cuteAudio.plop();
       }
+
+      boardAssignments[r] = newCol;
+      moveHistory.push({ r, oldCol, newCol });
+      updateUndoButton();
 
       updateGameStatus();
       renderBoard();
 
-      // Sparkle burst only if placed safely and not in solved state (which has its own fanfare)
-      if (willAddCat && !isSolved) {
-        const { conflictSet } = calculateConflicts();
-        if (!conflictSet.has(`${r},${c}`)) {
-          triggerTileSparkle(r, c);
+      // Trigger tile sparkle if safe placement
+      if (newCol !== -1 && !isSolved) {
+        const ev = evaluateBoard(boardAssignments);
+        if (!ev.conflictSet.has(`${r},${newCol}`)) {
+          triggerTileSparkle(r, newCol);
           cuteAudio.sparkle();
         }
       }
@@ -715,29 +914,29 @@
     function undoMove() {
       if (isSolvingAnimation || moveHistory.length === 0) return;
       const lastMove = moveHistory.pop();
-      // Revert the move
-      boardState[lastMove.r][lastMove.c] = !lastMove.wasAdded;
+      boardAssignments[lastMove.r] = lastMove.oldCol;
       cuteAudio.remove();
       updateUndoButton();
       updateGameStatus();
       renderBoard();
-      showToast('Undid last kitten move ↩️', 'info', '🐾');
+      showToast('Undid move ↩️', 'info', '🐾');
     }
 
     function updateGameStatus() {
-      const { conflictSet, conflictPairs, totalCats } = calculateConflicts();
+      const ev = evaluateBoard(boardAssignments);
+      const { emptyDomainRows } = computeCSPDomains(boardAssignments);
 
       // Update Cat Count UI
       const catCountEl = document.getElementById('cat-count');
-      catCountEl.innerText = totalCats;
+      catCountEl.innerText = ev.placedCount;
 
       // Update Conflict UI
       const conflictCountEl = document.getElementById('conflict-count');
       const conflictIconEl = document.getElementById('conflict-icon');
       const conflictBadge = document.getElementById('status-conflicts-badge');
 
-      if (conflictSet.size > 0) {
-        conflictCountEl.innerText = `${conflictPairs} ${conflictPairs === 1 ? 'pair' : 'pairs'}`;
+      if (ev.totalConflicts > 0) {
+        conflictCountEl.innerText = `${ev.totalConflicts} ${ev.totalConflicts === 1 ? 'pair' : 'pairs'}`;
         conflictCountEl.className = 'font-extrabold text-sm md:text-base text-rose-500';
         conflictIconEl.innerText = '⚠️';
         conflictBadge.classList.add('border-rose-200', 'bg-rose-50/60');
@@ -748,15 +947,24 @@
         conflictBadge.classList.remove('border-rose-200', 'bg-rose-50/60');
       }
 
-      // Check Victory Condition: Exactly N cats and 0 conflicts
+      // Domain wipeout warning badge
+      const wipeoutBadge = document.getElementById('status-wipeout-badge');
+      const wipeoutText = document.getElementById('wipeout-text');
+      if (emptyDomainRows.length > 0 && ev.placedCount < N && ev.totalConflicts === 0) {
+        wipeoutBadge.classList.remove('hidden');
+        wipeoutText.innerText = `Row ${emptyDomainRows[0] + 1} has 0 legal moves! (Dead End)`;
+      } else {
+        wipeoutBadge.classList.add('hidden');
+      }
+
+      // Check Victory Condition
       const victoryBanner = document.getElementById('victory-banner');
-      if (totalCats === N && conflictSet.size === 0) {
+      if (ev.isSolved) {
         if (!isSolved) {
           isSolved = true;
-          // Trigger celebratory sparkles & audio fanfare exactly once
           celebrateVictory();
           cuteAudio.victory();
-          showToast('👑 Purr-fect Harmony! You solved the puzzle!', 'success', '🎉');
+          showToast('👑 Purr-fect Harmony! All Queens placed without conflict!', 'success', '🎉');
         }
         victoryBanner.classList.remove('hidden');
         setTimeout(() => {
@@ -775,7 +983,7 @@
     function clearBoard() {
       stopSolvingAnimation();
       cuteAudio.remove();
-      boardState = Array.from({ length: N }, () => Array(N).fill(false));
+      boardAssignments = new Array(N).fill(-1);
       isSolved = false;
       moveHistory = [];
       updateUndoButton();
@@ -831,103 +1039,47 @@
       setTimeout(() => el.remove(), 1500);
     }
 
-    // Smart Hint System (Backtracks from user's current board state)
-    function findSmartHint(currentPlacements, size) {
-      // 1. Check for duplicate rows or columns
-      const rowCounts = {};
-      const colCounts = {};
-      for (let p of currentPlacements) {
-        rowCounts[p.r] = (rowCounts[p.r] || 0) + 1;
-        colCounts[p.c] = (colCounts[p.c] || 0) + 1;
-        if (rowCounts[p.r] > 1 || colCounts[p.c] > 1) {
-          return { status: 'conflict', message: 'Multiple kitties are in the same line! Move one first.' };
-        }
-      }
-
-      // 2. Check diagonals
-      for (let i = 0; i < currentPlacements.length; i++) {
-        for (let j = i + 1; j < currentPlacements.length; j++) {
-          if (Math.abs(currentPlacements[i].r - currentPlacements[j].r) === Math.abs(currentPlacements[i].c - currentPlacements[j].c)) {
-            return { status: 'conflict', message: 'Kitties are in diagonal conflict! Move the alarmed kitty first.' };
-          }
-        }
-      }
-
-      // 3. Build board array
-      const board = new Array(size).fill(-1);
-      for (let p of currentPlacements) {
-        board[p.r] = p.c;
-      }
-
-      function isSafe(b, r, c) {
-        for (let i = 0; i < size; i++) {
-          if (i === r || b[i] === -1) continue;
-          if (b[i] === c || Math.abs(i - r) === Math.abs(b[i] - c)) return false;
-        }
-        return true;
-      }
-
-      const emptyRows = [];
-      for (let r = 0; r < size; r++) {
-        if (board[r] === -1) emptyRows.push(r);
-      }
-
-      if (emptyRows.length === 0) {
-        return { status: 'solved', message: 'Puzzle is already solved! 🎉' };
-      }
-
-      function solve(idx) {
-        if (idx === emptyRows.length) return true;
-        const r = emptyRows[idx];
-        const cols = Array.from({ length: size }, (_, i) => i).sort(() => Math.random() - 0.5);
-
-        for (let c of cols) {
-          if (isSafe(board, r, c)) {
-            board[r] = c;
-            if (solve(idx + 1)) return true;
-            board[r] = -1;
-          }
-        }
-        return false;
-      }
-
-      if (solve(0)) {
-        const nextRow = emptyRows[0];
-        return {
-          status: 'ok',
-          nextMove: { r: nextRow, c: board[nextRow] },
-          fullSolution: board.map((c, r) => ({ r, c }))
-        };
-      } else {
-        return { status: 'deadend', message: 'This placement cannot lead to a solution! Undo or pick up a kitty ↩️' };
-      }
-    }
-
+    // Execute Smart Hint
     function giveSmartHint() {
       if (isSolvingAnimation) return;
 
-      const { catPositions } = calculateConflicts();
-      const hintResult = findSmartHint(catPositions, N);
+      const hintResult = computeSmartHint(boardAssignments, moveHistory);
 
-      if (hintResult.status === 'conflict') {
+      if (hintResult.type === 'conflict') {
         cuteAudio.buzz();
         showToast(hintResult.message, 'error', '⚠️');
-      } else if (hintResult.status === 'deadend') {
-        cuteAudio.buzz();
-        showToast(hintResult.message, 'error', '😿');
-      } else if (hintResult.status === 'solved') {
+      } else if (hintResult.type === 'solved') {
         cuteAudio.sparkle();
         showToast(hintResult.message, 'success', '👑');
-      } else if (hintResult.status === 'ok') {
-        const { r, c } = hintResult.nextMove;
-        boardState[r][c] = true;
-        moveHistory.push({ r, c, wasAdded: true });
+      } else if (hintResult.type === 'assign') {
+        const { row, col } = hintResult;
+        const oldCol = boardAssignments[row];
+        boardAssignments[row] = col;
+        moveHistory.push({ r: row, oldCol, newCol: col });
         updateUndoButton();
-        triggerTileSparkle(r, c);
+        triggerTileSparkle(row, col);
         cuteAudio.sparkle();
         updateGameStatus();
         renderBoard();
-        showToast(`Adopted a safe kitten at Row ${r + 1}, Col ${c + 1} 🐾`, 'success', '💡');
+        showToast(hintResult.message, 'success', '💡');
+      } else if (hintResult.type === 'backtrack') {
+        const { row, oldCol, newCol } = hintResult;
+        boardAssignments[row] = newCol;
+        moveHistory.push({ r: row, oldCol, newCol });
+        updateUndoButton();
+        triggerTileSparkle(row, newCol);
+        cuteAudio.sparkle();
+        updateGameStatus();
+        renderBoard();
+        showToast(hintResult.message, 'info', '🔄');
+      } else if (hintResult.type === 'reset_assign') {
+        boardAssignments = [...hintResult.solution];
+        moveHistory = [];
+        updateUndoButton();
+        cuteAudio.victory();
+        updateGameStatus();
+        renderBoard();
+        showToast(hintResult.message, 'success', '🪄');
       }
     }
 
@@ -951,41 +1103,42 @@
       solveBtn.disabled = true;
       solveBtn.classList.add('opacity-70', 'cursor-not-allowed');
 
-      // Solve from clean state
-      boardState = Array.from({ length: N }, () => Array(N).fill(false));
+      // Solve starting from current board if possible, otherwise solve from clean board
+      let solution = solveCSP(boardAssignments);
+      if (!solution) {
+        boardAssignments = new Array(N).fill(-1);
+        solution = solveCSP(boardAssignments);
+      }
+
       moveHistory = [];
       updateUndoButton();
       updateGameStatus();
       renderBoard();
 
-      // Find solution
-      const hintResult = findSmartHint([], N);
-      if (hintResult.status !== 'ok') {
+      if (!solution) {
         stopSolvingAnimation();
         return;
       }
 
-      const solution = hintResult.fullSolution;
-      let step = 0;
-
+      // Animate row-by-row incremental assignment
+      let r = 0;
       solverInterval = setInterval(() => {
-        if (step < solution.length) {
-          const { r, c } = solution[step];
-          boardState[r][c] = true;
+        if (r < N) {
+          const c = solution[r];
+          boardAssignments[r] = c;
           triggerTileSparkle(r, c);
           cuteAudio.plop();
-          // Update board visually without firing premature victory
           renderBoard();
-          const { conflictSet, totalCats } = calculateConflicts();
-          document.getElementById('cat-count').innerText = totalCats;
-          step++;
+          const ev = evaluateBoard(boardAssignments);
+          document.getElementById('cat-count').innerText = ev.placedCount;
+          r++;
         } else {
           stopSolvingAnimation();
           updateGameStatus();
           renderBoard();
-          showToast('🪄 Backtracking AI solved the puzzle!', 'success', '✨');
+          showToast('🪄 Backtracking Search with Forward Checking completed!', 'success', '✨');
         }
-      }, 160);
+      }, 180);
     }
 
     // Initialize board on launch (Default: 8x8)
