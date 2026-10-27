@@ -50,8 +50,9 @@
             'cozy': '0 8px 30px rgba(240, 101, 149, 0.12), 0 4px 12px rgba(254, 200, 154, 0.15)',
             'cozy-sm': '0 4px 14px rgba(240, 101, 149, 0.08)',
             'tile': '0 4px 12px rgba(245, 166, 178, 0.12)',
-            'glow-conflict': '0 0 20px rgba(244, 63, 94, 0.45), inset 0 0 10px rgba(244, 63, 94, 0.2)',
-            'glow-crown': '0 0 24px rgba(251, 191, 36, 0.6), 0 0 40px rgba(244, 114, 182, 0.4)',
+            'glow-conflict': '0 0 16px rgba(244, 63, 94, 0.45), inset 0 0 8px rgba(244, 63, 94, 0.2)',
+            'glow-crown': '0 0 24px rgba(251, 191, 36, 0.6), 0 0 35px rgba(244, 114, 182, 0.35)',
+            'glow-hint': '0 0 20px rgba(168, 85, 247, 0.6), inset 0 0 10px rgba(168, 85, 247, 0.2)',
           },
           animation: {
             'bounce-soft': 'bounceSoft 1.8s infinite ease-in-out',
@@ -61,16 +62,16 @@
           keyframes: {
             bounceSoft: {
               '0%, 100%': { transform: 'translateY(0)' },
-              '50%': { transform: 'translateY(-6px)' },
+              '50%': { transform: 'translateY(-5px)' },
             },
             floatCat: {
               '0%, 100%': { transform: 'translateY(0) scale(1)' },
-              '50%': { transform: 'translateY(-4px) scale(1.02)' },
+              '50%': { transform: 'translateY(-3px) scale(1.02)' },
             },
             shakeGentle: {
               '0%, 100%': { transform: 'translateX(0)' },
-              '20%, 60%': { transform: 'translateX(-4px)' },
-              '40%, 80%': { transform: 'translateX(4px)' },
+              '20%, 60%': { transform: 'translateX(-3px)' },
+              '40%, 80%': { transform: 'translateX(3px)' },
             }
           }
         }
@@ -92,22 +93,34 @@
       50% { opacity: 0.9; }
       100% { transform: translate(var(--tx), var(--ty)) scale(1.3) rotate(180deg); opacity: 0; }
     }
+    .cat-avatar-svg {
+      filter: drop-shadow(0 2px 4px rgba(74, 68, 88, 0.15));
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .cat-avatar-svg:hover {
+      transform: scale(1.08);
+    }
+    .sight-line-highlight {
+      background-color: rgba(254, 205, 211, 0.45) !important;
+      outline: 2px dashed rgba(244, 63, 94, 0.45);
+      outline-offset: -2px;
+    }
   </style>
 </head>
-<body class="min-h-screen text-warmgray-700 flex flex-col items-center justify-between p-4 md:p-6 antialiased selection:bg-strawberry-200">
+<body class="min-h-screen text-warmgray-700 flex flex-col items-center justify-between p-3 md:p-6 antialiased selection:bg-strawberry-200">
 
   <!-- Sparkle Particle Container -->
   <div id="particle-container" class="fixed inset-0 pointer-events-none overflow-hidden z-50"></div>
 
   <!-- Main Wrap -->
-  <div class="w-full max-w-3xl flex flex-col items-center gap-4 my-auto relative">
+  <div class="w-full max-w-2xl flex flex-col items-center gap-3.5 my-auto relative">
 
     <!-- 1. Header Section -->
     <header class="text-center flex flex-col items-center gap-1.5 w-full">
       <!-- Title Badge -->
-      <div class="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-1.5 rounded-full border border-strawberry-200 shadow-cozy-sm mb-1">
-        <span class="text-2xl animate-bounce-soft inline-block">🐱</span>
-        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-strawberry-500 via-peach-300 to-lavender-400 bg-clip-text text-transparent font-display">
+      <div class="inline-flex items-center gap-2 bg-white/85 backdrop-blur-md px-4 py-1.5 rounded-full border border-strawberry-200 shadow-cozy-sm mb-0.5">
+        <span class="text-2xl animate-bounce-soft inline-block">🐾</span>
+        <h1 class="text-xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-strawberry-500 via-peach-300 to-lavender-400 bg-clip-text text-transparent font-display">
           Cat-straints: N-Kittens Challenge
         </h1>
         <button id="btn-sound-toggle" onclick="toggleSound()" class="text-xs font-bold px-2 py-0.5 bg-lavender-100 hover:bg-lavender-200 text-lavender-400 rounded-full border border-lavender-200 transition-colors flex items-center gap-1 ml-1" title="Toggle cute sound effects">
@@ -116,91 +129,111 @@
         </button>
       </div>
       
-      <p class="text-xs md:text-sm text-warmgray-700/80 font-medium max-w-lg">
-        Place <span id="target-k-label" class="font-bold text-strawberry-500 bg-strawberry-100/70 px-2 py-0.5 rounded-md">8 cats</span> on the board so no two cats can see each other! (No row, column, or diagonal conflict)
+      <p class="text-xs md:text-sm text-warmgray-700/80 font-medium max-w-md text-center">
+        Place <span id="target-k-label" class="font-bold text-strawberry-500 bg-strawberry-100/70 px-2 py-0.5 rounded-md">8 cats</span> so no two cats can see each other along any row, column, or diagonal!
       </p>
 
       <!-- Board Size Selector -->
-      <div class="flex items-center gap-2 mt-2 bg-white/70 backdrop-blur-sm p-1.5 rounded-full border border-strawberry-100 shadow-cozy-sm">
+      <div class="flex items-center gap-2 mt-1 bg-white/70 backdrop-blur-sm p-1.5 rounded-full border border-strawberry-100 shadow-cozy-sm">
         <span class="text-xs font-bold text-warmgray-700/70 pl-2.5 pr-1">Board Size:</span>
-        <button onclick="setBoardSize(4)" id="btn-size-4" class="size-btn px-3.5 py-1 text-xs md:text-sm font-bold rounded-full transition-all duration-200 text-warmgray-700 hover:bg-strawberry-100">4×4</button>
-        <button onclick="setBoardSize(6)" id="btn-size-6" class="size-btn px-3.5 py-1 text-xs md:text-sm font-bold rounded-full transition-all duration-200 text-warmgray-700 hover:bg-strawberry-100">6×6</button>
-        <button onclick="setBoardSize(8)" id="btn-size-8" class="size-btn px-3.5 py-1 text-xs md:text-sm font-bold rounded-full transition-all duration-200 bg-gradient-to-r from-strawberry-400 to-strawberry-500 text-white shadow-sm">8×8</button>
+        <button onclick="setBoardSize(4)" id="btn-size-4" class="size-btn px-3 py-1 text-xs md:text-sm font-bold rounded-full transition-all duration-200 text-warmgray-700 hover:bg-strawberry-100">4×4</button>
+        <button onclick="setBoardSize(6)" id="btn-size-6" class="size-btn px-3 py-1 text-xs md:text-sm font-bold rounded-full transition-all duration-200 text-warmgray-700 hover:bg-strawberry-100">6×6</button>
+        <button onclick="setBoardSize(8)" id="btn-size-8" class="size-btn px-3 py-1 text-xs md:text-sm font-bold rounded-full transition-all duration-200 bg-gradient-to-r from-strawberry-400 to-strawberry-500 text-white shadow-sm">8×8</button>
       </div>
     </header>
 
-    <!-- Victory Banner (Hidden by default, animates into view) -->
+    <!-- Toast Notification / Friendly Helper Message -->
+    <div id="toast-message" class="hidden transition-all duration-300 transform -translate-y-2 opacity-0 px-3.5 py-1.5 rounded-full text-xs font-bold shadow-cozy-sm flex items-center gap-1.5">
+      <span id="toast-icon">💡</span>
+      <span id="toast-text">Tip message</span>
+    </div>
+
+    <!-- Victory Banner (Animates into view on win) -->
     <div id="victory-banner" class="hidden w-full max-w-md transform transition-all duration-500 scale-95 opacity-0">
-      <div class="bg-gradient-to-r from-amber-100 via-strawberry-100 to-lavender-200 border-2 border-amber-300 rounded-3xl p-3.5 shadow-glow-crown flex items-center justify-between gap-3 text-center">
+      <div class="bg-gradient-to-r from-amber-100 via-strawberry-100 to-lavender-200 border-2 border-amber-300 rounded-3xl p-3 shadow-glow-crown flex items-center justify-between gap-3 text-center">
         <div class="text-2xl animate-spin" style="animation-duration: 4s;">✨</div>
         <div class="flex-1">
-          <h2 class="text-base md:text-lg font-extrabold text-warmgray-800 flex items-center justify-center gap-1.5 font-display">
+          <h2 class="text-sm md:text-base font-extrabold text-warmgray-800 flex items-center justify-center gap-1.5 font-display">
             <span>🎉 Purr-fect Harmony!</span>
           </h2>
-          <p class="text-xs text-warmgray-700/90 font-bold">All Queens are crowned & sleeping in peace! 🐾</p>
+          <p class="text-[11px] md:text-xs text-warmgray-700/90 font-bold">All <span id="victory-n-label">8</span> Queens are crowned & sleeping in peace! 🐾</p>
+          <div class="mt-2 flex items-center justify-center gap-2">
+            <button onclick="playNextLevel()" id="btn-next-level" class="px-3 py-1 bg-white hover:bg-amber-50 text-amber-700 font-extrabold text-[11px] rounded-full shadow-sm border border-amber-200 active:scale-95 transition-all">
+              Next Level 🐾
+            </button>
+            <button onclick="clearBoard()" class="px-3 py-1 bg-white hover:bg-rose-50 text-rose-600 font-extrabold text-[11px] rounded-full shadow-sm border border-rose-200 active:scale-95 transition-all">
+              Play Again 🔄
+            </button>
+          </div>
         </div>
         <div class="text-2xl animate-spin" style="animation-duration: 4s; animation-direction: reverse;">✨</div>
       </div>
     </div>
 
     <!-- 2. Main Play Area (Centerpiece Board) -->
-    <main class="relative flex flex-col items-center">
+    <main class="relative flex flex-col items-center w-full">
       <!-- Board Container Outer Card -->
-      <div class="bg-white/90 backdrop-blur-md p-3 md:p-4 rounded-[2.5rem] border-4 border-white shadow-cozy flex flex-col items-center relative">
+      <div class="bg-white/90 backdrop-blur-md p-2.5 md:p-3.5 rounded-[2rem] border-4 border-white shadow-cozy flex flex-col items-center relative max-w-full">
         
         <!-- Whimsical decorative paw prints -->
-        <span class="absolute -top-3 -left-3 text-xl opacity-40 rotate-[-20deg]">🐾</span>
-        <span class="absolute -bottom-3 -right-3 text-xl opacity-40 rotate-[25deg]">🐾</span>
-        <span class="absolute -top-3 -right-3 text-sm opacity-50">🌸</span>
-        <span class="absolute -bottom-3 -left-3 text-sm opacity-50">✨</span>
+        <span class="absolute -top-3 -left-3 text-lg opacity-40 rotate-[-20deg] pointer-events-none">🐾</span>
+        <span class="absolute -bottom-3 -right-3 text-lg opacity-40 rotate-[25deg] pointer-events-none">🐾</span>
+        <span class="absolute -top-3 -right-3 text-sm opacity-50 pointer-events-none">🌸</span>
+        <span class="absolute -bottom-3 -left-3 text-sm opacity-50 pointer-events-none">✨</span>
 
         <!-- The Dynamic Board Grid -->
-        <div id="board" class="grid gap-1.5 md:gap-2 transition-all duration-300">
+        <div id="board" class="grid gap-1 md:gap-1.5 transition-all duration-300">
           <!-- Tiles injected via JavaScript -->
         </div>
 
       </div>
 
       <!-- Quick helper whisper -->
-      <div class="text-[11px] text-warmgray-700/60 font-semibold mt-2 flex items-center gap-1.5">
+      <div class="text-[11px] text-warmgray-700/60 font-semibold mt-1.5 flex items-center gap-1.5">
         <span class="inline-block w-2 h-2 rounded-full bg-strawberry-400"></span>
-        Click any square to adopt or pick up a kitten
+        Click any square to adopt or pick up a kitten • Hover over a cat to see its sightlines
       </div>
     </main>
 
     <!-- 3. Minimal Status & Controls -->
-    <footer class="w-full flex flex-col items-center gap-3">
+    <footer class="w-full flex flex-col items-center gap-2.5">
       <!-- Status Badges -->
-      <div class="flex flex-wrap items-center justify-center gap-3">
+      <div class="flex flex-wrap items-center justify-center gap-2.5">
         <!-- Cats Count -->
-        <div id="status-cats-badge" class="flex items-center gap-2 bg-white/85 backdrop-blur-sm px-4 py-2 rounded-2xl border border-strawberry-100 shadow-cozy-sm transition-all duration-200">
-          <span class="text-lg">🐾</span>
-          <span class="text-xs md:text-sm font-bold text-warmgray-700">Cats: <span id="cat-count" class="text-strawberry-500 font-extrabold text-base">0</span>/<span id="board-target-count" class="font-extrabold">8</span></span>
+        <div id="status-cats-badge" class="flex items-center gap-2 bg-white/85 backdrop-blur-sm px-3.5 py-1.5 rounded-2xl border border-strawberry-100 shadow-cozy-sm transition-all duration-200">
+          <span class="text-base">🐾</span>
+          <span class="text-xs md:text-sm font-bold text-warmgray-700">Cats: <span id="cat-count" class="text-strawberry-500 font-extrabold text-sm md:text-base">0</span>/<span id="board-target-count" class="font-extrabold">8</span></span>
         </div>
 
         <!-- Conflicts Count -->
-        <div id="status-conflicts-badge" class="flex items-center gap-2 bg-white/85 backdrop-blur-sm px-4 py-2 rounded-2xl border border-strawberry-100 shadow-cozy-sm transition-all duration-200">
-          <span id="conflict-icon" class="text-lg">✨</span>
-          <span class="text-xs md:text-sm font-bold text-warmgray-700">Conflicts: <span id="conflict-count" class="font-extrabold text-base text-emerald-500">0</span></span>
+        <div id="status-conflicts-badge" class="flex items-center gap-2 bg-white/85 backdrop-blur-sm px-3.5 py-1.5 rounded-2xl border border-strawberry-100 shadow-cozy-sm transition-all duration-200">
+          <span id="conflict-icon" class="text-base">✨</span>
+          <span class="text-xs md:text-sm font-bold text-warmgray-700">Conflicts: <span id="conflict-count" class="font-extrabold text-sm md:text-base text-emerald-500">0</span></span>
         </div>
       </div>
 
       <!-- Pill Action Buttons -->
-      <div class="flex flex-wrap items-center justify-center gap-2.5">
-        <!-- Clear Board -->
-        <button onclick="clearBoard()" class="group flex items-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-strawberry-50 active:scale-95 border border-strawberry-200 text-warmgray-700 font-bold text-xs md:text-sm shadow-cozy-sm transition-all duration-150">
-          <span class="group-hover:rotate-45 transition-transform duration-200">🧹</span>
-          <span>Clear Board</span>
+      <div class="flex flex-wrap items-center justify-center gap-2">
+        <!-- Undo Button -->
+        <button onclick="undoMove()" id="btn-undo" class="group flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white hover:bg-strawberry-50 active:scale-95 border border-strawberry-200 text-warmgray-700 font-bold text-xs shadow-cozy-sm transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
+          <span class="group-hover:-rotate-45 transition-transform duration-200">↩️</span>
+          <span>Undo</span>
         </button>
 
-        <!-- Reset / Shuffle Hint -->
-        <button onclick="resetBoard()" class="group flex items-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-lavender-100 active:scale-95 border border-lavender-200 text-warmgray-700 font-bold text-xs md:text-sm shadow-cozy-sm transition-all duration-150">
-          <span class="group-hover:rotate-180 transition-transform duration-300">🔄</span>
-          <span>Reset</span>
+        <!-- Smart Hint Button -->
+        <button onclick="giveSmartHint()" id="btn-hint" class="group flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white hover:bg-lavender-50 active:scale-95 border border-lavender-200 text-lavender-500 font-extrabold text-xs shadow-cozy-sm transition-all duration-150">
+          <span class="group-hover:scale-125 transition-transform duration-200">💡</span>
+          <span>Hint</span>
+        </button>
+
+        <!-- Clear Board -->
+        <button onclick="clearBoard()" class="group flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white hover:bg-strawberry-50 active:scale-95 border border-strawberry-200 text-warmgray-700 font-bold text-xs shadow-cozy-sm transition-all duration-150">
+          <span class="group-hover:rotate-45 transition-transform duration-200">🧹</span>
+          <span>Clear</span>
         </button>
 
         <!-- Solve for Me 🪄 -->
-        <button onclick="solvePuzzleAnimated()" id="btn-solve" class="group flex items-center gap-1.5 px-5 py-2 rounded-full bg-gradient-to-r from-strawberry-400 via-strawberry-500 to-lavender-400 hover:from-strawberry-500 hover:to-lavender-500 text-white font-extrabold text-xs md:text-sm shadow-cozy active:scale-95 hover:shadow-lg transition-all duration-200">
+        <button onclick="solvePuzzleAnimated()" id="btn-solve" class="group flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-strawberry-400 via-strawberry-500 to-lavender-400 hover:from-strawberry-500 hover:to-lavender-500 text-white font-extrabold text-xs shadow-cozy active:scale-95 hover:shadow-lg transition-all duration-200">
           <span class="group-hover:scale-125 transition-transform duration-200">🪄</span>
           <span>Solve for Me</span>
         </button>
@@ -210,19 +243,108 @@
   </div>
 
   <!-- Legend & Cozy Footer Note -->
-  <div class="mt-4 text-center text-xs text-warmgray-700/60 font-medium flex items-center justify-center gap-4">
+  <div class="mt-3 text-center text-xs text-warmgray-700/60 font-medium flex items-center justify-center gap-3.5 flex-wrap">
     <span class="flex items-center gap-1"><span>😸</span> Safe Kitty</span>
-    <span class="flex items-center gap-1"><span>😿</span> Alarmed Kitty (&gt;_&lt;)</span>
-    <span class="flex items-center gap-1"><span>👑</span> Queen of the Board</span>
+    <span class="flex items-center gap-1"><span>😾</span> Alarmed Kitty (&gt;_&lt;)</span>
+    <span class="flex items-center gap-1"><span>👑</span> Queen Kitty</span>
   </div>
 
-  <!-- Interactive Game Logic & Cute Web Audio -->
+  <!-- Repaired, Comprehensive Game Engine & Audio -->
   <script>
     let N = 8;
-    // boardState[r][c] = boolean (true if kitten present)
+    // boardState[r][c] = boolean
     let boardState = [];
     let isSolved = false;
     let isSolvingAnimation = false;
+    let solverInterval = null;
+    let moveHistory = []; // Stack of {r, c, wasAdded}
+
+    // Handcrafted cute SVG Kitten Avatars with 4 pastel breeds & reactive expressions
+    const KittyAvatars = {
+      breeds: [
+        { fur: '#FAB1A0', patch: '#E17055', ear: '#FF7675', eye: '#2D3436' }, // Peach Tabby
+        { fur: '#FFEAA7', patch: '#FDCB6E', ear: '#FF7675', eye: '#2D3436' }, // Cream Calico
+        { fur: '#F5E6CC', patch: '#634735', ear: '#E8A87C', eye: '#0984E3' }, // Siamese
+        { fur: '#FFD2DC', patch: '#FF88A5', ear: '#FFAAB9', eye: '#6C5CE7' }, // Strawberry Pink
+      ],
+
+      getSvg(r, c, state = 'happy', size = 38) {
+        const breed = this.breeds[(r * 2 + c) % this.breeds.length];
+        
+        let eyesSvg = '';
+        let mouthSvg = '';
+        let accentsSvg = '';
+
+        if (state === 'conflict') {
+          // Alarmed / Angry squinty eyes (>_<)
+          eyesSvg = `
+            <path d="M 11 17 L 14 19 L 11 21" fill="none" stroke="#E11D48" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M 21 17 L 18 19 L 21 21" fill="none" stroke="#E11D48" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+          `;
+          mouthSvg = `<path d="M 14 24 Q 16 22 18 24" fill="none" stroke="#E11D48" stroke-width="1.4" stroke-linecap="round" />`;
+          accentsSvg = `
+            <!-- Anger vein / sweat -->
+            <path d="M 23 8 L 26 10 M 26 8 L 23 10" stroke="#E11D48" stroke-width="1.2" stroke-linecap="round" />
+          `;
+        } else if (state === 'crowned') {
+          // Solved happy closed eyes (^_^) and royal crown!
+          eyesSvg = `
+            <path d="M 10 19 Q 13 16 16 19" fill="none" stroke="#2D3436" stroke-width="1.6" stroke-linecap="round" />
+            <path d="M 16 19 Q 19 16 22 19" fill="none" stroke="#2D3436" stroke-width="1.6" stroke-linecap="round" />
+          `;
+          mouthSvg = `<path d="M 14 23 Q 16 25 18 23" fill="none" stroke="#2D3436" stroke-width="1.3" stroke-linecap="round" />`;
+          accentsSvg = `
+            <!-- Royal Crown -->
+            <path d="M 11 8 L 12.5 12 L 16 9 L 19.5 12 L 21 8 L 20 14 L 12 14 Z" fill="#FBBF24" stroke="#D97706" stroke-width="0.8" stroke-linejoin="round"/>
+            <circle cx="16" cy="7.5" r="1.2" fill="#EF4444" />
+            <circle cx="11" cy="7.5" r="0.9" fill="#8B5CF6" />
+            <circle cx="21" cy="7.5" r="0.9" fill="#10B981" />
+          `;
+        } else {
+          // Peaceful Happy Kitty with sweet sparkling eyes
+          eyesSvg = `
+            <ellipse cx="12" cy="18" rx="1.8" ry="2.2" fill="${breed.eye}" />
+            <circle cx="12.7" cy="17.2" r="0.7" fill="#FFFFFF" />
+            <ellipse cx="20" cy="18" rx="1.8" ry="2.2" fill="${breed.eye}" />
+            <circle cx="20.7" cy="17.2" r="0.7" fill="#FFFFFF" />
+          `;
+          mouthSvg = `<path d="M 14 23 Q 16 25 18 23" fill="none" stroke="#2D3436" stroke-width="1.3" stroke-linecap="round" />`;
+        }
+
+        return `
+          <svg viewBox="0 0 32 32" width="${size}" height="${size}" class="cat-avatar-svg pointer-events-none select-none">
+            <!-- Ears -->
+            <polygon points="7,14 10,6 15,12" fill="${breed.fur}" stroke="#4A4458" stroke-width="0.7" />
+            <polygon points="8.5,13 10.5,8 13.5,12" fill="${breed.ear}" />
+            <polygon points="25,14 22,6 17,12" fill="${breed.fur}" stroke="#4A4458" stroke-width="0.7" />
+            <polygon points="23.5,13 21.5,8 18.5,12" fill="${breed.ear}" />
+
+            <!-- Head -->
+            <ellipse cx="16" cy="19" rx="11" ry="9.5" fill="${breed.fur}" stroke="#4A4458" stroke-width="0.8" />
+            <!-- Coat patch -->
+            <path d="M 16 10 Q 21 10 24 14 Q 20 18 16 15 Z" fill="${breed.patch}" opacity="0.85" />
+
+            <!-- Blushing Cheeks -->
+            <circle cx="9" cy="21" r="2.2" fill="#FF8FA3" opacity="0.65" />
+            <circle cx="23" cy="21" r="2.2" fill="#FF8FA3" opacity="0.65" />
+
+            <!-- Whiskers -->
+            <line x1="6" y1="19" x2="2" y2="18.5" stroke="#4A4458" stroke-width="0.7" stroke-linecap="round" />
+            <line x1="6" y1="21" x2="2" y2="22" stroke="#4A4458" stroke-width="0.7" stroke-linecap="round" />
+            <line x1="26" y1="19" x2="30" y2="18.5" stroke="#4A4458" stroke-width="0.7" stroke-linecap="round" />
+            <line x1="26" y1="21" x2="30" y2="22" stroke="#4A4458" stroke-width="0.7" stroke-linecap="round" />
+
+            <!-- Nose -->
+            <polygon points="15.2,21 16.8,21 16,22" fill="#FF7675" />
+
+            <!-- Eyes & Mouth -->
+            ${eyesSvg}
+            ${mouthSvg}
+            ${accentsSvg}
+          </svg>
+        `;
+      }
+    };
 
     // Self-contained Cute Web Audio Synthesizer (Zero dependencies, offline)
     const cuteAudio = {
@@ -234,7 +356,7 @@
           if (AC) this.ctx = new AC();
         }
         if (this.ctx && this.ctx.state === 'suspended') {
-          this.ctx.resume();
+          this.ctx.resume().catch(() => {});
         }
       },
       toggle() {
@@ -295,6 +417,23 @@
           osc.stop(t + 0.15);
         });
       },
+      buzz() {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.linearRampToValueAtTime(110, now + 0.15);
+        g.gain.setValueAtTime(0.08, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+        osc.connect(g);
+        g.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.17);
+      },
       victory() {
         if (this.muted) return;
         this.init();
@@ -307,7 +446,7 @@
           const t = now + idx * 0.08;
           osc.type = 'sine';
           osc.frequency.setValueAtTime(freq, t);
-          g.gain.setValueAtTime(0.15, t);
+          g.gain.setValueAtTime(0.14, t);
           g.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
           osc.connect(g);
           g.connect(this.ctx.destination);
@@ -324,161 +463,81 @@
       if (isSoundOn) cuteAudio.sparkle();
     }
 
+    function showToast(message, type = 'info', icon = '💡') {
+      const toast = document.getElementById('toast-message');
+      const toastText = document.getElementById('toast-text');
+      const toastIcon = document.getElementById('toast-icon');
+
+      toastText.innerText = message;
+      toastIcon.innerText = icon;
+
+      let styleClasses = 'bg-lavender-100 text-purple-700 border border-lavender-200';
+      if (type === 'error') styleClasses = 'bg-rose-100 text-rose-700 border border-rose-200';
+      if (type === 'success') styleClasses = 'bg-emerald-100 text-emerald-800 border border-emerald-200';
+
+      toast.className = `px-3.5 py-1.5 rounded-full text-xs font-bold shadow-cozy-sm flex items-center gap-1.5 transition-all duration-300 transform translate-y-0 opacity-100 ${styleClasses}`;
+      toast.classList.remove('hidden');
+
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => {
+        toast.classList.add('opacity-0', '-translate-y-2');
+        setTimeout(() => toast.classList.add('hidden'), 300);
+      }, 3200);
+    }
+
     function initBoard(size) {
+      stopSolvingAnimation();
       N = size;
       boardState = Array.from({ length: N }, () => Array(N).fill(false));
       isSolved = false;
+      moveHistory = [];
+      updateUndoButton();
 
       // Update Labels
       document.getElementById('target-k-label').innerText = `${N} cats`;
       document.getElementById('board-target-count').innerText = N;
+      document.getElementById('victory-n-label').innerText = N;
 
       // Update size pills
       [4, 6, 8].forEach(sz => {
         const btn = document.getElementById(`btn-size-${sz}`);
-        if (sz === N) {
-          btn.className = 'size-btn px-3.5 py-1 text-xs md:text-sm font-bold rounded-full transition-all duration-200 bg-gradient-to-r from-strawberry-400 to-strawberry-500 text-white shadow-sm';
-        } else {
-          btn.className = 'size-btn px-3.5 py-1 text-xs md:text-sm font-bold rounded-full transition-all duration-200 text-warmgray-700 hover:bg-strawberry-100';
+        if (btn) {
+          if (sz === N) {
+            btn.className = 'size-btn px-3 py-1 text-xs md:text-sm font-bold rounded-full transition-all duration-200 bg-gradient-to-r from-strawberry-400 to-strawberry-500 text-white shadow-sm';
+          } else {
+            btn.className = 'size-btn px-3 py-1 text-xs md:text-sm font-bold rounded-full transition-all duration-200 text-warmgray-700 hover:bg-strawberry-100';
+          }
         }
       });
+
+      // Update next level button label
+      const nextBtn = document.getElementById('btn-next-level');
+      if (nextBtn) {
+        if (N === 4) nextBtn.innerText = 'Try 6×6 🐾';
+        else if (N === 6) nextBtn.innerText = 'Try 8×8 🐾';
+        else nextBtn.innerText = 'Scramble 8×8 🎲';
+      }
 
       updateGameStatus();
       renderBoard();
     }
 
+    function playNextLevel() {
+      if (N === 4) setBoardSize(6);
+      else if (N === 6) setBoardSize(8);
+      else {
+        clearBoard();
+        giveSmartHint();
+      }
+    }
+
     function setBoardSize(size) {
-      if (isSolvingAnimation) return;
+      if (isSolvingAnimation) stopSolvingAnimation();
       cuteAudio.plop();
       initBoard(size);
     }
 
-    function renderBoard() {
-      const boardEl = document.getElementById('board');
-      boardEl.innerHTML = '';
-      
-      // Dynamic grid template sizing based on N
-      boardEl.style.gridTemplateColumns = `repeat(${N}, minmax(0, 1fr))`;
-      
-      // Calculate responsive tile size
-      let tileSizeClass = 'w-10 h-10 md:w-12 md:h-12 text-2xl';
-      if (N === 4) {
-        tileSizeClass = 'w-16 h-16 md:w-20 md:h-20 text-4xl';
-      } else if (N === 6) {
-        tileSizeClass = 'w-12 h-12 md:w-16 md:h-16 text-3xl';
-      } else if (N === 8) {
-        tileSizeClass = 'w-10 h-10 md:w-13 md:h-13 text-2xl md:text-3xl';
-      }
-
-      // Check conflicts map
-      const { conflictSet } = calculateConflicts();
-
-      for (let r = 0; r < N; r++) {
-        for (let c = 0; c < N; c++) {
-          const hasCat = boardState[r][c];
-          const hasConflict = conflictSet.has(`${r},${c}`);
-          const isLightTile = (r + c) % 2 === 0;
-
-          const tileBtn = document.createElement('button');
-          tileBtn.dataset.row = r;
-          tileBtn.dataset.col = c;
-          tileBtn.onclick = () => onTileClick(r, c);
-
-          // Tile Base Theme (Cream and Soft Peach/Pink)
-          let bgClass = isLightTile 
-            ? 'bg-[#FFF8F0] hover:bg-[#FFF3E3] border-[#FFE6D0]' 
-            : 'bg-[#FFE8E8] hover:bg-[#FFDADA] border-[#FFCCD5]';
-          
-          let glowClass = 'border-2';
-          if (hasConflict) {
-            bgClass = 'bg-[#FFE2E2] border-rose-400';
-            glowClass = 'border-2 shadow-glow-conflict animate-shake-gentle';
-          } else if (isSolved && hasCat) {
-            bgClass = 'bg-gradient-to-br from-amber-50 to-pink-100 border-amber-300';
-            glowClass = 'border-2 shadow-glow-crown';
-          }
-
-          tileBtn.className = `${tileSizeClass} rounded-2xl md:rounded-3xl ${bgClass} ${glowClass} flex items-center justify-center relative transition-all duration-200 active:scale-90 group focus:outline-none`;
-
-          if (hasCat) {
-            const catContainer = document.createElement('div');
-            catContainer.className = 'relative flex items-center justify-center transition-all transform';
-
-            // Crown when solved!
-            if (isSolved) {
-              const crown = document.createElement('span');
-              crown.innerText = '👑';
-              crown.className = 'absolute -top-3 md:-top-4 text-xs md:text-sm animate-bounce';
-              crown.style.animationDuration = '1.2s';
-              catContainer.appendChild(crown);
-            }
-
-            // Cat Face depending on state
-            const catFace = document.createElement('span');
-            if (hasConflict) {
-              // Alarmed Kitty (>_<)
-              catFace.innerHTML = `
-                <div class="flex flex-col items-center justify-center">
-                  <span class="text-xl md:text-2xl filter drop-shadow">😿</span>
-                  <span class="text-[9px] md:text-[10px] font-black text-rose-500 tracking-tighter -mt-1">&gt;_&lt;</span>
-                </div>
-              `;
-            } else if (isSolved) {
-              // Royal peaceful queen cat
-              catFace.innerHTML = `
-                <div class="flex flex-col items-center justify-center animate-bounce-soft">
-                  <span class="text-2xl md:text-3xl filter drop-shadow">😸</span>
-                </div>
-              `;
-            } else {
-              // Peaceful Happy Kitty
-              catFace.innerHTML = `
-                <div class="flex flex-col items-center justify-center animate-float-cat">
-                  <span class="text-2xl md:text-3xl filter drop-shadow">😺</span>
-                </div>
-              `;
-            }
-
-            catContainer.appendChild(catFace);
-            tileBtn.appendChild(catContainer);
-          } else {
-            // Hover preview hint (tiny faint paw)
-            const hint = document.createElement('span');
-            hint.className = 'opacity-0 group-hover:opacity-30 text-sm md:text-base transition-opacity pointer-events-none';
-            hint.innerText = '🐾';
-            tileBtn.appendChild(hint);
-          }
-
-          boardEl.appendChild(tileBtn);
-        }
-      }
-    }
-
-    function onTileClick(r, c) {
-      if (isSolvingAnimation) return;
-      const willAddCat = !boardState[r][c];
-      boardState[r][c] = willAddCat;
-
-      if (willAddCat) {
-        cuteAudio.plop();
-      } else {
-        cuteAudio.remove();
-      }
-
-      updateGameStatus();
-      renderBoard();
-
-      // Trigger sparkle if placed successfully without conflicts
-      if (boardState[r][c]) {
-        const { conflictSet } = calculateConflicts();
-        if (!conflictSet.has(`${r},${c}`)) {
-          triggerTileSparkle(r, c);
-          cuteAudio.sparkle();
-        }
-      }
-    }
-
-    // Calculate all conflicting cat positions & conflict pairs
+    // Accurate CSP conflict calculation (Returns attacked cells set, pairs count, and list of cats)
     function calculateConflicts() {
       const conflictSet = new Set();
       const catPositions = [];
@@ -509,7 +568,154 @@
         }
       }
 
-      return { conflictSet, conflictPairs, totalCats: catPositions.length };
+      return { conflictSet, conflictPairs, totalCats: catPositions.length, catPositions };
+    }
+
+    // Highlight sightlines without destroying DOM elements
+    function highlightSightLines(hr, hc) {
+      document.querySelectorAll('#board button').forEach(btn => {
+        const r = parseInt(btn.dataset.row, 10);
+        const c = parseInt(btn.dataset.col, 10);
+        const isSightLine = (r === hr || c === hc || Math.abs(r - hr) === Math.abs(c - hc));
+        if (isSightLine && !(r === hr && c === hc)) {
+          btn.classList.add('sight-line-highlight');
+        } else {
+          btn.classList.remove('sight-line-highlight');
+        }
+      });
+    }
+
+    function clearSightLines() {
+      document.querySelectorAll('#board button.sight-line-highlight').forEach(btn => {
+        btn.classList.remove('sight-line-highlight');
+      });
+    }
+
+    function renderBoard() {
+      const boardEl = document.getElementById('board');
+      boardEl.innerHTML = '';
+      
+      boardEl.style.gridTemplateColumns = `repeat(${N}, minmax(0, 1fr))`;
+      
+      const { conflictSet } = calculateConflicts();
+
+      // Responsive tile dimensions
+      const tileDim = N === 4 ? 'w-14 h-14 md:w-20 md:h-20' : N === 6 ? 'w-11 h-11 md:w-15 md:h-15' : 'w-9 h-9 md:w-12 md:h-12';
+      const catSize = N === 4 ? 44 : N === 6 ? 36 : 30;
+
+      for (let r = 0; r < N; r++) {
+        for (let c = 0; c < N; c++) {
+          const cellKey = `${r},${c}`;
+          const hasCat = boardState[r][c];
+          const hasConflict = conflictSet.has(cellKey);
+          const isLightTile = (r + c) % 2 === 0;
+
+          const tileBtn = document.createElement('button');
+          tileBtn.dataset.row = r;
+          tileBtn.dataset.col = c;
+          tileBtn.onclick = () => onTileClick(r, c);
+
+          // Sightline preview on hover (pure CSS class toggle, no DOM detachment)
+          tileBtn.onmouseenter = () => {
+            if (boardState[r][c]) highlightSightLines(r, c);
+          };
+          tileBtn.onmouseleave = () => {
+            clearSightLines();
+          };
+
+          // Base tile colors
+          let bgClass = isLightTile 
+            ? 'bg-[#FFF8F0] hover:bg-[#FFF3E3] border-[#FFE6D0]' 
+            : 'bg-[#FFE8E8] hover:bg-[#FFDADA] border-[#FFCCD5]';
+          
+          let glowClass = 'border-2';
+          if (hasConflict) {
+            bgClass = 'bg-[#FFE2E2] border-rose-400';
+            glowClass = 'border-2 shadow-glow-conflict animate-shake-gentle';
+          } else if (isSolved && hasCat) {
+            bgClass = 'bg-gradient-to-br from-amber-50 to-pink-100 border-amber-300';
+            glowClass = 'border-2 shadow-glow-crown';
+          }
+
+          tileBtn.className = `${tileDim} rounded-2xl md:rounded-3xl ${bgClass} ${glowClass} flex items-center justify-center relative transition-all duration-150 active:scale-95 group focus:outline-none`;
+
+          if (hasCat) {
+            const catWrapper = document.createElement('div');
+            catWrapper.className = 'w-full h-full flex items-center justify-center relative';
+
+            let state = isSolved ? 'crowned' : hasConflict ? 'conflict' : 'happy';
+            catWrapper.innerHTML = KittyAvatars.getSvg(r, c, state, catSize);
+            tileBtn.appendChild(catWrapper);
+          } else {
+            // Hover preview hint (tiny faint paw)
+            const hint = document.createElement('span');
+            hint.className = 'opacity-0 group-hover:opacity-30 text-xs md:text-sm transition-opacity pointer-events-none select-none';
+            hint.innerText = '🐾';
+            tileBtn.appendChild(hint);
+          }
+
+          boardEl.appendChild(tileBtn);
+        }
+      }
+    }
+
+    function onTileClick(r, c) {
+      if (isSolvingAnimation) return;
+
+      const isCurrentlyPlaced = boardState[r][c];
+      const { totalCats } = calculateConflicts();
+
+      // Logical Bug Fix: Enforce N-Queens limit (cannot place > N cats)
+      if (!isCurrentlyPlaced && totalCats >= N) {
+        cuteAudio.buzz();
+        showToast(`You already have all ${N} cats placed! Move or remove one first 🐾`, 'error', '⚠️');
+        return;
+      }
+
+      // Toggle cat
+      const willAddCat = !isCurrentlyPlaced;
+      boardState[r][c] = willAddCat;
+
+      // Track move for Undo
+      moveHistory.push({ r, c, wasAdded: willAddCat });
+      updateUndoButton();
+
+      if (willAddCat) {
+        cuteAudio.plop();
+      } else {
+        cuteAudio.remove();
+      }
+
+      updateGameStatus();
+      renderBoard();
+
+      // Sparkle burst only if placed safely and not in solved state (which has its own fanfare)
+      if (willAddCat && !isSolved) {
+        const { conflictSet } = calculateConflicts();
+        if (!conflictSet.has(`${r},${c}`)) {
+          triggerTileSparkle(r, c);
+          cuteAudio.sparkle();
+        }
+      }
+    }
+
+    function updateUndoButton() {
+      const undoBtn = document.getElementById('btn-undo');
+      if (undoBtn) {
+        undoBtn.disabled = moveHistory.length === 0;
+      }
+    }
+
+    function undoMove() {
+      if (isSolvingAnimation || moveHistory.length === 0) return;
+      const lastMove = moveHistory.pop();
+      // Revert the move
+      boardState[lastMove.r][lastMove.c] = !lastMove.wasAdded;
+      cuteAudio.remove();
+      updateUndoButton();
+      updateGameStatus();
+      renderBoard();
+      showToast('Undid last kitten move ↩️', 'info', '🐾');
     }
 
     function updateGameStatus() {
@@ -526,12 +732,12 @@
 
       if (conflictSet.size > 0) {
         conflictCountEl.innerText = `${conflictPairs} ${conflictPairs === 1 ? 'pair' : 'pairs'}`;
-        conflictCountEl.className = 'font-extrabold text-base text-rose-500';
+        conflictCountEl.className = 'font-extrabold text-sm md:text-base text-rose-500';
         conflictIconEl.innerText = '⚠️';
         conflictBadge.classList.add('border-rose-200', 'bg-rose-50/60');
       } else {
         conflictCountEl.innerText = '0';
-        conflictCountEl.className = 'font-extrabold text-base text-emerald-500';
+        conflictCountEl.className = 'font-extrabold text-sm md:text-base text-emerald-500';
         conflictIconEl.innerText = '✨';
         conflictBadge.classList.remove('border-rose-200', 'bg-rose-50/60');
       }
@@ -541,9 +747,10 @@
       if (totalCats === N && conflictSet.size === 0) {
         if (!isSolved) {
           isSolved = true;
-          // Trigger celebratory sparkles & audio fanfare
+          // Trigger celebratory sparkles & audio fanfare exactly once
           celebrateVictory();
           cuteAudio.victory();
+          showToast('👑 Purr-fect Harmony! You solved the puzzle!', 'success', '🎉');
         }
         victoryBanner.classList.remove('hidden');
         setTimeout(() => {
@@ -560,16 +767,15 @@
     }
 
     function clearBoard() {
-      if (isSolvingAnimation) return;
+      stopSolvingAnimation();
       cuteAudio.remove();
       boardState = Array.from({ length: N }, () => Array(N).fill(false));
       isSolved = false;
+      moveHistory = [];
+      updateUndoButton();
       updateGameStatus();
       renderBoard();
-    }
-
-    function resetBoard() {
-      clearBoard();
+      showToast('Board cleared 🧹', 'info', '✨');
     }
 
     // Sparkle Burst Animations
@@ -619,38 +825,117 @@
       setTimeout(() => el.remove(), 1500);
     }
 
-    // N-Queens Backtracking Solver (Randomized column order for diverse solutions)
-    function findNQueensSolution(size) {
-      const cols = new Set();
-      const diag1 = new Set(); // r - c
-      const diag2 = new Set(); // r + c
-      const solution = [];
+    // Smart Hint System (Backtracks from user's current board state)
+    function findSmartHint(currentPlacements, size) {
+      // 1. Check for duplicate rows or columns
+      const rowCounts = {};
+      const colCounts = {};
+      for (let p of currentPlacements) {
+        rowCounts[p.r] = (rowCounts[p.r] || 0) + 1;
+        colCounts[p.c] = (colCounts[p.c] || 0) + 1;
+        if (rowCounts[p.r] > 1 || colCounts[p.c] > 1) {
+          return { status: 'conflict', message: 'Multiple kitties are in the same line! Move one first.' };
+        }
+      }
 
-      function backtrack(row) {
-        if (row === size) return true;
-        
-        const candidateCols = Array.from({ length: size }, (_, i) => i).sort(() => Math.random() - 0.5);
+      // 2. Check diagonals
+      for (let i = 0; i < currentPlacements.length; i++) {
+        for (let j = i + 1; j < currentPlacements.length; j++) {
+          if (Math.abs(currentPlacements[i].r - currentPlacements[j].r) === Math.abs(currentPlacements[i].c - currentPlacements[j].c)) {
+            return { status: 'conflict', message: 'Kitties are in diagonal conflict! Move the alarmed kitty first.' };
+          }
+        }
+      }
 
-        for (const col of candidateCols) {
-          if (cols.has(col) || diag1.has(row - col) || diag2.has(row + col)) continue;
+      // 3. Build board array
+      const board = new Array(size).fill(-1);
+      for (let p of currentPlacements) {
+        board[p.r] = p.c;
+      }
 
-          cols.add(col);
-          diag1.add(row - col);
-          diag2.add(row + col);
-          solution.push({ row, col });
+      function isSafe(b, r, c) {
+        for (let i = 0; i < size; i++) {
+          if (i === r || b[i] === -1) continue;
+          if (b[i] === c || Math.abs(i - r) === Math.abs(b[i] - c)) return false;
+        }
+        return true;
+      }
 
-          if (backtrack(row + 1)) return true;
+      const emptyRows = [];
+      for (let r = 0; r < size; r++) {
+        if (board[r] === -1) emptyRows.push(r);
+      }
 
-          cols.delete(col);
-          diag1.delete(row - col);
-          diag2.delete(row + col);
-          solution.pop();
+      if (emptyRows.length === 0) {
+        return { status: 'solved', message: 'Puzzle is already solved! 🎉' };
+      }
+
+      function solve(idx) {
+        if (idx === emptyRows.length) return true;
+        const r = emptyRows[idx];
+        const cols = Array.from({ length: size }, (_, i) => i).sort(() => Math.random() - 0.5);
+
+        for (let c of cols) {
+          if (isSafe(board, r, c)) {
+            board[r] = c;
+            if (solve(idx + 1)) return true;
+            board[r] = -1;
+          }
         }
         return false;
       }
 
-      backtrack(0);
-      return solution;
+      if (solve(0)) {
+        const nextRow = emptyRows[0];
+        return {
+          status: 'ok',
+          nextMove: { r: nextRow, c: board[nextRow] },
+          fullSolution: board.map((c, r) => ({ r, c }))
+        };
+      } else {
+        return { status: 'deadend', message: 'This placement cannot lead to a solution! Undo or pick up a kitty ↩️' };
+      }
+    }
+
+    function giveSmartHint() {
+      if (isSolvingAnimation) return;
+
+      const { catPositions } = calculateConflicts();
+      const hintResult = findSmartHint(catPositions, N);
+
+      if (hintResult.status === 'conflict') {
+        cuteAudio.buzz();
+        showToast(hintResult.message, 'error', '⚠️');
+      } else if (hintResult.status === 'deadend') {
+        cuteAudio.buzz();
+        showToast(hintResult.message, 'error', '😿');
+      } else if (hintResult.status === 'solved') {
+        cuteAudio.sparkle();
+        showToast(hintResult.message, 'success', '👑');
+      } else if (hintResult.status === 'ok') {
+        const { r, c } = hintResult.nextMove;
+        boardState[r][c] = true;
+        moveHistory.push({ r, c, wasAdded: true });
+        updateUndoButton();
+        triggerTileSparkle(r, c);
+        cuteAudio.sparkle();
+        updateGameStatus();
+        renderBoard();
+        showToast(`Adopted a safe kitten at Row ${r + 1}, Col ${c + 1} 🐾`, 'success', '💡');
+      }
+    }
+
+    function stopSolvingAnimation() {
+      if (solverInterval) {
+        clearInterval(solverInterval);
+        solverInterval = null;
+      }
+      isSolvingAnimation = false;
+      const solveBtn = document.getElementById('btn-solve');
+      if (solveBtn) {
+        solveBtn.disabled = false;
+        solveBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+      }
     }
 
     function solvePuzzleAnimated() {
@@ -660,39 +945,39 @@
       solveBtn.disabled = true;
       solveBtn.classList.add('opacity-70', 'cursor-not-allowed');
 
-      // Clear existing board
+      // Solve from clean state
       boardState = Array.from({ length: N }, () => Array(N).fill(false));
+      moveHistory = [];
+      updateUndoButton();
       updateGameStatus();
       renderBoard();
 
-      const solution = findNQueensSolution(N);
-      if (!solution || solution.length !== N) {
-        isSolvingAnimation = false;
-        solveBtn.disabled = false;
-        solveBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+      // Find solution
+      const hintResult = findSmartHint([], N);
+      if (hintResult.status !== 'ok') {
+        stopSolvingAnimation();
         return;
       }
 
-      // Step-by-step placement animation with cute sparkles
+      const solution = hintResult.fullSolution;
       let step = 0;
-      const interval = setInterval(() => {
+
+      solverInterval = setInterval(() => {
         if (step < solution.length) {
-          const { row, col } = solution[step];
-          boardState[row][col] = true;
-          triggerTileSparkle(row, col);
+          const { r, c } = solution[step];
+          boardState[r][c] = true;
+          triggerTileSparkle(r, c);
           cuteAudio.plop();
-          updateGameStatus();
+          // Update board visually without firing premature victory
           renderBoard();
+          const { conflictSet, totalCats } = calculateConflicts();
+          document.getElementById('cat-count').innerText = totalCats;
           step++;
         } else {
-          clearInterval(interval);
-          isSolvingAnimation = false;
-          solveBtn.disabled = false;
-          solveBtn.classList.remove('opacity-70', 'cursor-not-allowed');
-          celebrateVictory();
-          cuteAudio.victory();
+          stopSolvingAnimation();
           updateGameStatus();
           renderBoard();
+          showToast('🪄 Backtracking AI solved the puzzle!', 'success', '✨');
         }
       }, 160);
     }
