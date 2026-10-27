@@ -80,9 +80,6 @@
       <button data-tab-target="compare" class="cute-btn px-5 py-2 text-sm md:text-base bg-white text-pink-600 hover:bg-pink-50 border border-pink-200 flex items-center gap-2">
         <span>⚔️</span> Algorithm Showdown
       </button>
-      <button data-tab-target="syllabus" class="cute-btn px-5 py-2 text-sm md:text-base bg-white text-pink-600 hover:bg-pink-50 border border-pink-200 flex items-center gap-2">
-        <span>📚</span> CSP Syllabus
-      </button>
     </nav>
   </header>
 
@@ -399,120 +396,6 @@
             </tr>
           </tbody>
         </table>
-      </div>
-
-    </section>
-
-    <!-- TAB 3: SYLLABUS & LEARNING HUB -->
-    <section id="tab-syllabus" class="tab-panel hidden space-y-6">
-      
-      <!-- Syllabus Hero -->
-      <div class="cute-card p-6 max-w-4xl mx-auto space-y-3">
-        <div class="flex items-center gap-3">
-          <span class="text-3xl">📖</span>
-          <div>
-            <h2 class="text-xl md:text-2xl font-bold text-gray-800">
-              Constraint Satisfaction & AI Search Curriculum
-            </h2>
-            <p class="text-xs md:text-sm text-pink-700">
-              Master the core foundations of CSP, state-space search, backtracking, and local optimization.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Module Cards Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-
-        <!-- Card 1: What is a CSP? -->
-        <div class="cute-card p-5 space-y-3 syllabus-card">
-          <div class="flex items-center gap-2 text-pink-600 font-bold text-base">
-            <span>🧩</span> Module 1: Formal Definition of CSP
-          </div>
-          <p class="text-xs text-gray-700 leading-relaxed">
-            A <strong>Constraint Satisfaction Problem (CSP)</strong> consists of a tuple $(X, D, C)$:
-          </p>
-          <ul class="text-xs text-gray-600 space-y-1.5 list-disc list-inside">
-            <li><strong>Variables $X = \{X_1, X_2, \dots, X_N\}$:</strong> Each row $i$ represents a cat variable.</li>
-            <li><strong>Domains $D_i = \{0, 1, \dots, N-1\}$:</strong> The possible column coordinates for row $i$.</li>
-            <li><strong>Constraints $C$:</strong> For every pair of cats $(i, j)$ with $i \neq j$:
-              <div class="bg-pink-50 p-2 rounded-lg font-mono text-[11px] text-pink-900 my-1">
-                Column conflict: X[i] ≠ X[j]<br>
-                Diagonal conflict: |X[i] - X[j]| ≠ |i - j|
-              </div>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Card 2: State Space Search -->
-        <div class="cute-card p-5 space-y-3 syllabus-card">
-          <div class="flex items-center gap-2 text-purple-600 font-bold text-base">
-            <span>🌳</span> Module 2: State-Space Representation
-          </div>
-          <p class="text-xs text-gray-700 leading-relaxed">
-            The state space represents all possible configurations of the problem:
-          </p>
-          <ul class="text-xs text-gray-600 space-y-1.5 list-disc list-inside">
-            <li><strong>Naive Unconstrained Search:</strong> $N^N$ states (for $N=8$, that's $8^8 = 16,777,216$ states!).</li>
-            <li><strong>Permutation Formulation:</strong> Enforcing 1 queen per row and column leaves $N!$ states ($8! = 40,320$ states).</li>
-            <li><strong>Search Tree:</strong> Root node represents an empty board. Each depth level assigns a queen to a new row.</li>
-          </ul>
-        </div>
-
-        <!-- Card 3: Backtracking Algorithm -->
-        <div class="cute-card p-5 space-y-3 syllabus-card">
-          <div class="flex items-center gap-2 text-rose-600 font-bold text-base">
-            <span>↩️</span> Module 3: Backtracking Search (DFS)
-          </div>
-          <p class="text-xs text-gray-700 leading-relaxed">
-            Backtracking is depth-first search tailored for CSPs:
-          </p>
-          <ul class="text-xs text-gray-600 space-y-1.5 list-disc list-inside">
-            <li><strong>Incremental Formulation:</strong> Assigns one variable at a time.</li>
-            <li><strong>Pruning:</strong> Whenever an assignment violates a constraint, the algorithm <em>backtracks</em> immediately, abandoning the entire sub-tree of invalid states.</li>
-            <li><strong>Heuristics:</strong> Can be enhanced with MRV (Minimum Remaining Values) and Forward Checking.</li>
-          </ul>
-        </div>
-
-        <!-- Card 4: Hill Climbing & Min-Conflicts -->
-        <div class="cute-card p-5 space-y-3 syllabus-card">
-          <div class="flex items-center gap-2 text-amber-600 font-bold text-base">
-            <span>⛰️</span> Module 4: Min-Conflicts Local Search
-          </div>
-          <p class="text-xs text-gray-700 leading-relaxed">
-            Local search operates on complete states (all $N$ cats already on the board):
-          </p>
-          <ul class="text-xs text-gray-600 space-y-1.5 list-disc list-inside">
-            <li><strong>Objective Function $h(n)$:</strong> Total number of conflicting pairs. The goal is to reach $h(n) = 0$.</li>
-            <li><strong>Min-Conflicts Heuristic:</strong> Selects a randomly conflicted cat, then moves it to the column that minimizes $h(n)$.</li>
-            <li><strong>Escaping Local Minima:</strong> Plateaus and local valleys are resolved using <strong>random restarts</strong>.</li>
-          </ul>
-        </div>
-
-      </div>
-
-      <!-- Real World Applications Callout -->
-      <div class="cute-card p-6 max-w-4xl mx-auto space-y-2 border-l-4 border-pink-500">
-        <h3 class="text-sm font-bold text-gray-800 flex items-center gap-2">
-          <span>🌍</span> Real-World CSP Applications
-        </h3>
-        <p class="text-xs text-gray-600 leading-relaxed">
-          While $N$-Queens is the classical AI benchmark, the same CSP algorithms power:
-        </p>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2 text-xs text-gray-700 font-medium">
-          <div class="p-2.5 bg-pink-50/60 rounded-xl border border-pink-100 flex items-center gap-2">
-            <span>📅</span> University Timetabling
-          </div>
-          <div class="p-2.5 bg-purple-50/60 rounded-xl border border-purple-100 flex items-center gap-2">
-            <span>✈️</span> Flight Crew Rostering
-          </div>
-          <div class="p-2.5 bg-amber-50/60 rounded-xl border border-amber-100 flex items-center gap-2">
-            <span>🖥️</span> Compiler Register Allocation
-          </div>
-          <div class="p-2.5 bg-emerald-50/60 rounded-xl border border-emerald-100 flex items-center gap-2">
-            <span>🗺️</span> Map & Graph Coloring
-          </div>
-        </div>
       </div>
 
     </section>
